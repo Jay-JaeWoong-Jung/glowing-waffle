@@ -9,4 +9,12 @@
 	```	
 	git remote add git@github.com:Jay-JaeWoong-Jung/glowing-waffle.git
 	```
+## Notes
+
+*Some files are ignored due to cross-OS compatibility of the repository; refer to .gitignore*
+
+markdown syntax can be found below
+https://confluence.atlassian.com/bitbucketserver/markdown-syntax-guide-776639995.html
+
+
 
