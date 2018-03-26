@@ -1,4 +1,4 @@
-# glowing-waffle
+# roommate manamgent application
 
 
 ## Contributor Install Instruction
