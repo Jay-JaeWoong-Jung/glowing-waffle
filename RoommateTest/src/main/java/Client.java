@@ -1,5 +1,3 @@
-
-
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -15,13 +13,14 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class Quickstart {
+public class Client{
+    protected ObjectInputStream ois;
+    protected ObjectOutputStream oos;
+
     /** Application name. */
     private static final String APPLICATION_NAME =
             "Google Calendar API Java Quickstart";
@@ -66,7 +65,7 @@ public class Quickstart {
     public static Credential authorize() throws IOException {
         // Load client secrets.
         InputStream in =
-                Quickstart.class.getResourceAsStream("/client_secret.json");
+                Client.class.getResourceAsStream("/client_secret.json");
         GoogleClientSecrets clientSecrets =
                 GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
@@ -99,40 +98,8 @@ public class Quickstart {
                 .build();
     }
 
-
-
-
-    public static void main(String[] args) throws IOException {
-        // Build a new authorized API client service.
-        // Note: Do not confuse this class with the
-        //   com.google.api.services.calendar.model.Calendar class.
-
-        com.google.api.services.calendar.Calendar service =
-                getCalendarService();
-
-        // List the next 10 events from the primary calendar.
-        DateTime now = new DateTime(System.currentTimeMillis());
-        Events events = service.events().list("primary")
-                .setMaxResults(10)
-                .setTimeMin(now)
-                .setOrderBy("startTime")
-                .setSingleEvents(true)
-                .execute();
-
-        List<Event> items = events.getItems();
-        if (items.size() == 0) {
-            System.out.println("No upcoming events found.");
-        } else {
-            System.out.println("Upcoming events");
-            for (Event event : items) {
-                DateTime start = event.getStart().getDateTime();
-                if (start == null) {
-                    start = event.getStart().getDate();
-                }
-                System.out.printf("%s (%s)\n", event.getSummary(), start);
-            }
-        }
-
+    // Event builder
+    public static Event addEvent(){
         Event event = new Event()
                 .setSummary("Google I/O 2015")
                 .setLocation("800 Howard St., San Francisco, CA 94103")
@@ -171,8 +138,57 @@ public class Quickstart {
                 .setUseDefault(false)
                 .setOverrides(Arrays.asList(reminderOverrides));
         event.setReminders(reminders);
+        return event;
+    }
+
+    public static com.google.api.services.calendar.model.Calendar addCalendar()
+    {
+        com.google.api.services.calendar.model.Calendar calendar = new Calendar();
+        calendar.setSummary("calendarSummary");
+        calendar.setTimeZone("America/Los_Angeles");
+        return calendar;
+    }
+
+    public static void main(String[] args) throws IOException {
+        // Build a new authorized API client service.
+        // Note: Do not confuse this class with the
+        //   com.google.api.services.calendar.model.Calendar class.
+
+        com.google.api.services.calendar.Calendar service =
+                getCalendarService();
+
+        // List the next 10 events from the primary calendar.
+        DateTime now = new DateTime(System.currentTimeMillis());
+        Events events = service.events().list("primary")
+                .setMaxResults(10)
+                .setTimeMin(now)
+                .setOrderBy("startTime")
+                .setSingleEvents(true)
+                .execute();
+
+        List<Event> items = events.getItems();
+        if (items.size() == 0) {
+            System.out.println("No upcoming events found.");
+        } else {
+            System.out.println("Upcoming events");
+            for (Event event : items) {
+                DateTime start = event.getStart().getDateTime();
+                if (start == null) {
+                    start = event.getStart().getDate();
+                }
+                System.out.printf("%s (%s)\n", event.getSummary(), start);
+            }
+        }
+
         String calendarId = "primary";
-        event = service.events().insert(calendarId, event).execute();
-        System.out.printf("Event created: %s\n", event.getHtmlLink());
+        Event event = addEvent();
+        service.events().insert(calendarId, event).execute();
+        System.out.printf("Event created! ");
+
+        // Insert the new calendar
+        com.google.api.services.calendar.model.Calendar calendar = addCalendar();
+       // com.google.api.services.calendar.Calendar createdCalendar = service.calendars().insert(calendar).execute();
+        //System.out.println(createdCalendar.getId());
+
     }
 }
