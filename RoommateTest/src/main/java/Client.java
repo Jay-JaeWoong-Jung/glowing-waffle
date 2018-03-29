@@ -149,13 +149,36 @@ public class Client{
         return calendar;
     }
 
-    public static void main(String[] args) throws IOException {
+
+    public void sendObject(Command command) {
+        try {
+            if(oos == null)
+            {
+                System.out.println("oos is null");
+            }
+            oos.writeObject(command);
+            oos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void main(String[] args) throws IOException {
         // Build a new authorized API client service.
         // Note: Do not confuse this class with the
         //   com.google.api.services.calendar.model.Calendar class.
 
+        // connect to serverThread and server
+        // port
+
         com.google.api.services.calendar.Calendar service =
                 getCalendarService();
+
+        // Retrieve the user account
+        com.google.api.services.calendar.model.Calendar alreadyExistedCalendar =
+                service.calendars().get("primary").execute();
+
+        System.out.println(alreadyExistedCalendar.getSummary());
 
         // List the next 10 events from the primary calendar.
         DateTime now = new DateTime(System.currentTimeMillis());
@@ -180,13 +203,28 @@ public class Client{
             }
         }
 
+        // Create a new calendar
+        com.google.api.services.calendar.model.Calendar calendar = new Calendar();
+        calendar.setSummary("calendarSummary");
+        calendar.setTimeZone("America/Los_Angeles");
+
+        Event groupEvent = addEvent();
+        Command command = new Command(CommandType.GROUP_EVENT, groupEvent);
+        sendObject(command);
+
+        // Insert the new calendar
+        Calendar createdCalendar = service.calendars().insert(calendar).execute();
+        System.out.println(createdCalendar.getId());
+
+        /*
         String calendarId = "primary";
         Event event = addEvent();
         service.events().insert(calendarId, event).execute();
         System.out.printf("Event created! ");
+        */
 
         // Insert the new calendar
-        com.google.api.services.calendar.model.Calendar calendar = addCalendar();
+       // com.google.api.services.calendar.model.Calendar calendar = addCalendar();
        // com.google.api.services.calendar.Calendar createdCalendar = service.calendars().insert(calendar).execute();
         //System.out.println(createdCalendar.getId());
 
