@@ -32,7 +32,9 @@
 	
 ## Notes
 
-*Some files are ignored due to cross-OS compatibility of the repository; refer to .gitignore*
+*we are intentionally ignoring project meta/config files for cross-OS compatibility of the repository; refer to .gitignore*
+## frequent issues
+* if push doesn't work, usually it means your local repo isn't up-to-date. I.E. someone else already made changes on remote repo that you don't have in your local git. You need to pull origin <branchname> before you can push your code. Remember to work inside your pair branch, __not on master__
 
 markdown syntax can be found below
 https://confluence.atlassian.com/bitbucketserver/markdown-syntax-guide-776639995.html
