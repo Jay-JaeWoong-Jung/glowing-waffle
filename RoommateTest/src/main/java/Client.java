@@ -12,15 +12,178 @@ import com.google.api.client.util.DateTime;
 
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.*;
+import com.google.api.services.calendar.model.Calendar;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.List;
+import java.net.Socket;
+import java.util.*;
 
-public class Client{
-    protected ObjectInputStream ois;
-    protected ObjectOutputStream oos;
+public class Client extends Thread{
+    private ObjectInputStream ois;
+    private ObjectOutputStream oos;
 
+    // Three Client Calendars
+    com.google.api.services.calendar.model.Calendar socialCalendar;
+    com.google.api.services.calendar.model.Calendar classCalendar;
+    com.google.api.services.calendar.model.Calendar groupCalendar;
+
+    // Three Calendar ID
+    String socialCalendarId;
+    String classCalendarId;
+    String groupCalendarId;
+
+    // Store the service;
+    com.google.api.services.calendar.Calendar service;
+
+    // Map from a string to its calendar ID
+    HashMap<String, String> summaryToId;
+
+    // Client Constructor
+    public Client(String ipAddress, int port) throws IOException {
+        // get oath credential
+        service = getCalendarService();
+
+        // Create the connection between client and server
+        System.out.println("Trying to connect to " + port + ":" + port);
+        Socket s = new Socket(ipAddress, port);
+        oos = new ObjectOutputStream(s.getOutputStream());
+        ois = new ObjectInputStream(s.getInputStream());
+        Scanner scan = new Scanner(System.in);
+        this.start();
+
+        // Retrieve a specific calendar list entry
+        summaryToId = new HashMap<>();
+        String pageToken = null;
+        do {
+            CalendarList calendarList = service.calendarList().list().setPageToken(pageToken).execute();
+            List<CalendarListEntry> items = calendarList.getItems();
+
+
+            for (CalendarListEntry calendarListEntry : items) {
+                String id = calendarListEntry.getId();
+                String summary = calendarListEntry.getSummary();
+                summaryToId.put(summary,id);
+            }
+            pageToken = calendarList.getNextPageToken();
+        } while (pageToken != null);
+
+        // choose calendar
+        socialCalendarId = chooseCalendar(scan, summaryToId);
+        socialCalendar= service.calendars().get(socialCalendarId).execute();
+        classCalendarId =  chooseCalendar(scan, summaryToId);
+        classCalendar = service.calendars().get(classCalendarId).execute();
+
+        //TODO ASK WHETHER THEY ALREADY HAVE A CALENDAR WHICH CAN ACT LIKE A GROUP CALENDAR,
+        //TODO IF YES THEN ENTER THE CHOOSE CALENDAR FUNCTION AGAIN, IF NO EXECUTE THE ADD
+        //TODO EXECUTE THE ADD THE NEW CALENDAR FUNCTION
+        addCalendar();
+
+        displayEvents(socialCalendarId);
+
+        // TODO ADD EVENT FUNCTION
+//        Event groupEvent = addEvent();
+ //       Command command = new Command(CommandType.GROUP_EVENT, groupEvent);
+  //      sendObject(command);
+
+        /*
+        String calendarId = "primary";
+        Event event = addEvent();
+        service.events().insert(calendarId, event).execute();
+        System.out.printf("Event created! ");
+        */
+        // TODO ADD THE TOGGLE PART
+
+        while (true) {
+            String newEvent = scan.next();
+        }
+    }
+
+    // Choose the calendar you want to use as the personal/social calendar
+    public String chooseCalendar(Scanner scan, HashMap<String, String> summaryToId ){
+        while(true) {
+            System.out.println("Please choose the calendar you want to choose as social" +
+                    "class in the following: ");
+            int number = 1;
+            for(Map.Entry<String, String> entry: summaryToId.entrySet()){
+                System.out.println(number + ") " + entry.getKey());
+                number ++;
+            }
+            String keyWord = scan.next();
+            if(summaryToId.get(keyWord) != null){
+                return summaryToId.get(keyWord);
+            }
+            else
+            {
+                System.out.println("Your choice is invalid");
+            }
+        }
+    }
+
+    // This is the multi-threading part
+    public void run() {
+        while (true) {
+            try {
+                Event newEvent = (Event)ois.readObject();
+                service.events().calendarImport(groupCalendarId, newEvent).execute();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // Create a new calendar and add it into the current calendar list
+    public void addCalendar()
+    {
+        try {
+            com.google.api.services.calendar.model.Calendar calendar = new Calendar();
+            calendar.setSummary("calendarSummary");
+            calendar.setTimeZone("America/Los_Angeles");
+            Calendar createdCalendar = service.calendars().insert(calendar).execute();
+            System.out.println("I add a new calendar， which has a calendar id of " + createdCalendar);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void displayEvents(String calendarId){
+        try{
+        // Retrieve the user account
+        com.google.api.services.calendar.model.Calendar alreadyExistedCalendar =
+                service.calendars().get(calendarId).execute();
+
+        System.out.println(alreadyExistedCalendar.getSummary());
+
+        /* List the next 10 events from the primary calendar. */
+        DateTime now = new DateTime(System.currentTimeMillis());
+        Events events = null;
+            events = service.events().list(calendarId)
+                    .setMaxResults(10)
+                    .setTimeMin(now)
+                    .setOrderBy("startTime")
+                    .setSingleEvents(true)
+                    .execute();
+
+        List<Event> items = events.getItems();
+        if (items.size() == 0) {
+            System.out.println("No upcoming events found.");
+        } else {
+            System.out.println("Upcoming events");
+            for (Event event : items) {
+                DateTime start = event.getStart().getDateTime();
+                if (start == null) {
+                    start = event.getStart().getDate();
+                }
+                System.out.printf("%s (%s)\n", event.getSummary(), start);
+            } }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    // TODO ADD NOTIFICATION
+
+    //NOTE ALL THE BELOW ARE FROM CALENDAR API FOR CREDENTIAL DON'T CHANGE THE CODE
     /** Application name. */
     private static final String APPLICATION_NAME =
             "Google Calendar API Java Quickstart";
@@ -127,6 +290,7 @@ public class Client{
                 new EventAttendee().setEmail("lpage@example.com"),
                 new EventAttendee().setEmail("sbrin@example.com"),
         };
+
         event.setAttendees(Arrays.asList(attendees));
 
         // set the reminder of the event
@@ -139,14 +303,6 @@ public class Client{
                 .setOverrides(Arrays.asList(reminderOverrides));
         event.setReminders(reminders);
         return event;
-    }
-
-    public static com.google.api.services.calendar.model.Calendar addCalendar()
-    {
-        com.google.api.services.calendar.model.Calendar calendar = new Calendar();
-        calendar.setSummary("calendarSummary");
-        calendar.setTimeZone("America/Los_Angeles");
-        return calendar;
     }
 
 
@@ -163,70 +319,7 @@ public class Client{
         }
     }
 
-    public void main(String[] args) throws IOException {
-        // Build a new authorized API client service.
-        // Note: Do not confuse this class with the
-        //   com.google.api.services.calendar.model.Calendar class.
-
-        // connect to serverThread and server
-        // port
-
-        com.google.api.services.calendar.Calendar service =
-                getCalendarService();
-
-        // Retrieve the user account
-        com.google.api.services.calendar.model.Calendar alreadyExistedCalendar =
-                service.calendars().get("primary").execute();
-
-        System.out.println(alreadyExistedCalendar.getSummary());
-
-        // List the next 10 events from the primary calendar.
-        DateTime now = new DateTime(System.currentTimeMillis());
-        Events events = service.events().list("primary")
-                .setMaxResults(10)
-                .setTimeMin(now)
-                .setOrderBy("startTime")
-                .setSingleEvents(true)
-                .execute();
-
-        List<Event> items = events.getItems();
-        if (items.size() == 0) {
-            System.out.println("No upcoming events found.");
-        } else {
-            System.out.println("Upcoming events");
-            for (Event event : items) {
-                DateTime start = event.getStart().getDateTime();
-                if (start == null) {
-                    start = event.getStart().getDate();
-                }
-                System.out.printf("%s (%s)\n", event.getSummary(), start);
-            }
-        }
-
-        // Create a new calendar
-        com.google.api.services.calendar.model.Calendar calendar = new Calendar();
-        calendar.setSummary("calendarSummary");
-        calendar.setTimeZone("America/Los_Angeles");
-
-        Event groupEvent = addEvent();
-        Command command = new Command(CommandType.GROUP_EVENT, groupEvent);
-        sendObject(command);
-
-        // Insert the new calendar
-        Calendar createdCalendar = service.calendars().insert(calendar).execute();
-        System.out.println(createdCalendar.getId());
-
-        /*
-        String calendarId = "primary";
-        Event event = addEvent();
-        service.events().insert(calendarId, event).execute();
-        System.out.printf("Event created! ");
-        */
-
-        // Insert the new calendar
-       // com.google.api.services.calendar.model.Calendar calendar = addCalendar();
-       // com.google.api.services.calendar.Calendar createdCalendar = service.calendars().insert(calendar).execute();
-        //System.out.println(createdCalendar.getId());
-
+    public static void main(String[] args) throws IOException {
+        Client player = new Client("localhost", 6789);
     }
 }

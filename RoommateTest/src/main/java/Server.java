@@ -6,6 +6,10 @@ import java.util.Vector;
 public class Server {
     private Vector<ServerThread> serverThreads;
 
+    public static void main(String[] args){
+        Server server = new Server(6789);
+    }
+
     public Server(int port) {
         try {
             System.out.println("Binding to port " + port);
@@ -31,10 +35,29 @@ public class Server {
 
     }
 
+
     public void groupEvent(Command command, ServerThread thread){
-        // TO-DO
+        // TODO
+        //Event to be broadcasted ;
+        broadcast(command,thread);
+
     }
 
     // broadcast function
+    public void broadcast(Command command, ServerThread thread) {
+        //if (message != null) {
+        if (command != null) {
+            //System.out.println(message);
+
+            for(ServerThread threads : serverThreads) {
+                if (thread != threads) {
+                    //threads.sendMessage(message);
+                    threads.sendObject(command);
+                }
+            }
+        }
+    }
+
+
 
 }

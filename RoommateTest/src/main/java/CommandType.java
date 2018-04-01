@@ -1,3 +1,4 @@
 public enum CommandType {
-    GROUP_EVENT;
+    GROUP_EVENT,
+    TOGGLE;
 }
