@@ -10,26 +10,31 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+
+import constants.credential;
 import constants.Sql;
 ;
 
 public class UserDAO {
 	private static UserDAO dao=new UserDAO();
-	private DataSource ds;
+	private  MysqlDataSource ds;
 	
 	private static Connection conn = null;
 	private static ResultSet rs = null;
 	private static PreparedStatement ps = null;
 	
 	private UserDAO(){
-		try{
-			//DataSource를 찾는다...
-			Context ic = new InitialContext();
-			ds=(DataSource)ic.lookup("jdbc:mysql://localhost/csci201FINAL?user=root&password=BlackSheepWall&useSSL=false");
+		
+				ds = new MysqlDataSource();
+			    ds.setUser(credential.USER);
+			    ds.setPassword(credential.PASSWORD);
+			    ds.setUseSSL(false);
+			    ds.setDatabaseName(credential.DATABASE);
+
+			    
 			System.out.println("DataSource connected......");
-		}catch(NamingException e){
-			e.printStackTrace();
-		} 
+	
 	
 	}
 	public void closeAll(PreparedStatement pstmt,Connection con) throws SQLException{
@@ -72,8 +77,8 @@ public class UserDAO {
 	}
 	
 	
-	public boolean userNameCheck(String username) throws SQLException {
-		boolean result = true;
+	public boolean isUsernaemAvailable(String username) throws SQLException {
+		boolean result = false;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -84,7 +89,7 @@ public class UserDAO {
 			pstmt.setString(1, username);
 			rs = pstmt.executeQuery();
 			if (!rs.next()) {
-				result = false;
+				result = true;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -163,4 +168,20 @@ public class UserDAO {
 //		}
 //		return stat;
 //	}
+	
+	
+	//Test here DAO methods here
+	public static void main(String args[] ) {
+		UserDAO dao = UserDAO.getInstanceOf();
+		boolean isUserNameAvailable = false;
+		try {
+			isUserNameAvailable = dao.isUsernaemAvailable("aaa");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println(isUserNameAvailable);
+
+	}
 }
