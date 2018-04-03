@@ -3,6 +3,8 @@ package controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import model.User;
+
 public class RegisterMemberController implements Controller {
 	@Override
 	public ModelAndView HandleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -15,8 +17,8 @@ public class RegisterMemberController implements Controller {
 		String email = request.getParameter("email");
 		String venmoHandle = request.getParameter("venmoHandle");
 		
-		MemberVO vo = new MemberVO(username, password, fullname, address, cellNum, emergencyNum, email, venmoHandle);
-		boolean regResult = MemberDAO.getInstance().registerMember(vo);
+		User user = new User(username, password, fullname, address, cellNum, emergencyNum, email, venmoHandle);
+		boolean regResult = UserDAO.getInstance().registerMember(user);
 		request.setAttribute("regResult", regResult);
 		
 		if (!regResult) {

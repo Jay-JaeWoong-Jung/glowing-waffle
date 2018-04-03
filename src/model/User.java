@@ -15,7 +15,7 @@ public class User {
 	
 	
 	//constructor using all fields (taking data from Signup)
-	public User(String username, String password, String fullname, String address, String cellNum, String emergencyNum, String email, String venmoHandle, int groupId) {
+	public User(String username, String password, String fullname, String address, String cellNum, String emergencyNum, String email, String venmoHandle) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -25,7 +25,6 @@ public class User {
 		this.emergencyNum = emergencyNum;
 		this.email = email;
 		this.venmoHandle = venmoHandle;
-		this.groupId = groupId;
 	}
 
 	//constructor using required fields (taking data from Login)
