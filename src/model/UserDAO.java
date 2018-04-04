@@ -1,18 +1,12 @@
 package model;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
-import constants.credential;
+import constants.Credential;
 import constants.Sql;
 ;
 
@@ -27,10 +21,10 @@ public class UserDAO {
 	private UserDAO(){
 		
 				ds = new MysqlDataSource();
-			    ds.setUser(credential.USER);
-			    ds.setPassword(credential.PASSWORD);
+			    ds.setUser(Credential.USER);
+			    ds.setPassword(Credential.PASSWORD);
 			    ds.setUseSSL(false);
-			    ds.setDatabaseName(credential.DATABASE);
+			    ds.setDatabaseName(Credential.DATABASE);
 
 			    
 			System.out.println("DataSource connected......");
