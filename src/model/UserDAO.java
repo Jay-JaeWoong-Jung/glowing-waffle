@@ -76,6 +76,30 @@ public class UserDAO {
 		}
 	}
 	
+	public User login(String username, String password) {
+		User user = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = getConnection();
+			String sql = "SELECT fullname, address, cellNum, emergencyNum, email, venmoHandle, groupId, checkInStatus where username=? AND password=?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, username);
+			pstmt.setString(2, password);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				user = new User(username, password, rs.getString(1), rs.getString(2), 
+						rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6));
+			}
+			closeAll(rs, pstmt, conn);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return user;
+	}
+	
 	
 	public boolean isUsernaemAvailable(String username) throws SQLException {
 		boolean result = false;
