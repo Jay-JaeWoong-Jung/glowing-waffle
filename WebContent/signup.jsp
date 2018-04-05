@@ -26,12 +26,43 @@
 
       <form class="form-request-help">
         <h2 class="form-request-help-heading text-center">Request Help to a TA</h2>
-        <label for="fullname" class="sr-only">type your full name </label>
-        <input type="text" id="fullname" class="form-control" placeholder="Your full name" required autofocus>
-        <label for="comment" class="sr-only">Describe your question briefly</label>
-        <input type="text" id="comment" class="form-control" placeholder="ask question here" required>
+        <label for="firstname" class="sr-only">type your full name </label>
+        <input type="text" id="firstname" class="form-control" placeholder="Your first name" required autofocus>
+        
+        <label for="lastname" class="sr-only">type your full name </label>
+        <input type="text" id="lastname" class="form-control" placeholder="Your last name" required autofocus>
+        
+    		<label for="email" class="sr-only">type your full name </label>
+        <input type="text" id="email" class="form-control" placeholder="enter your email" required autofocus>
+
+		<label for="username" class="sr-only">type your full name </label>
+    	    <input type="text" id="username" class="form-control" placeholder="enter a username" required autofocus>
+        
+        <label for="password" class="sr-only">type your full name </label>
+        <input type="text" id="password" class="form-control" placeholder="enter your password" required autofocus>
+        
+        <label for="cellNum" class="sr-only">type your full name </label>
+        <input type="text" id="cellNum" class="form-control" placeholder="enter your cellNumber" required autofocus>
+        
+        <label for="emergencyNum" class="sr-only">type your emergency number </label>
+        <input type="text" id="emergencyNum" class="form-control" placeholder="enter your emergency cell number" required autofocus>
+        
+        <label for="venmoHandle" class="sr-only">type your venmo handle </label>
+        <input type="text" id="venmoHandle" class="form-control" placeholder="type your venmo handle" required autofocus>        
+        
+        
         <button class="btn btn-lg btn-primary btn-block" type="submit">submit</button>
       </form>
+      
+      
+      <!--
+	private String address;
+
+	private String venmoHandle;
+	private int groupId;
+	private String checkedInStatus;
+	
+        -->
 
     </div> <!-- /container -->
 

@@ -12,8 +12,10 @@ CREATE TABLE user (
   emerg_number int(11) not null,
   email varchar(50) not null,
   venmo_handle varchar(11),
-  house_id int(11) not null REFERENCES house(id)
-  
+  house_id int(11) not null REFERENCES house(id),
+  class_calendar_id varchar(50),
+  social_calendar_id varchar(50),
+  group_calendar_id varchar(50)
   
 );
 
