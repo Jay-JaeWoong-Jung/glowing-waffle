@@ -12,6 +12,9 @@ public class User {
 	private String venmoHandle;
 	private int groupId;
 	private String checkedInStatus;
+	private int socialCalendarId;
+	private int classCalendarId;
+	private int groupCalendarId;
 	
 	
 	
@@ -112,5 +115,23 @@ public class User {
 	}
 	public void setCheckedInStatus(String checkedInStatus) {
 		this.checkedInStatus = checkedInStatus;
+	}
+	public int getSocialCalendarId() {
+		return socialCalendarId;
+	}
+	public void setSocialCalendarId(int scid) {
+		this.socialCalendarId = scid;
+	}
+	public int getClassCalendarId() {
+		return classCalendarId;
+	}
+	public void setClassCalendarId(int ccid) {
+		this.classCalendarId = ccid;
+	}
+	public int getGroupCalendarId() {
+		return groupCalendarId;
+	}
+	public void setGroupCalendarId(int gcid) {
+		this.groupCalendarId = gcid;
 	}
 }

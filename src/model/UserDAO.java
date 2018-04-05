@@ -98,6 +98,15 @@ public class UserDAO {
 		return user;
 	}
 	
+	public User registerMember(String username, String password, String firstName, String lastName, String address,
+			int cellNum, int emergencyNum, String email, String venmoHandle) throws SQLException {
+		User user = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+				
+	}
+	
 	
 	public boolean isUsernaemAvailable(String username) throws SQLException {
 		boolean result = false;
