@@ -3,10 +3,11 @@ package model;
 public class User {
 	private String username;
 	private String password;//we have to do something about this
-	private String fullname;
+	private String firstName;
+	private String lastName;
 	private String address;
-	private String cellNum;
-	private String emergencyNum;
+	private int cellNum;
+	private int emergencyNum;
 	private String email;
 	private String venmoHandle;
 	private int groupId;
@@ -15,11 +16,12 @@ public class User {
 	
 	
 	//constructor using all fields (taking data from Signup)
-	public User(String username, String password, String fullname, String address, String cellNum, String emergencyNum, String email, String venmoHandle) {
+	public User(String username, String password, String firstName, String lastName, String address, int cellNum, int emergencyNum, String email, String venmoHandle) {
 		super();
 		this.username = username;
 		this.password = password;
-		this.fullname = fullname;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.address = address;
 		this.cellNum = cellNum;
 		this.emergencyNum = emergencyNum;
@@ -32,6 +34,15 @@ public class User {
 		super();
 		this.username = username;
 		this.password = password;
+	}
+	
+	public User(String username, String password, String firstName, String lastName, int cellNumber, int emergencyNumber) {
+		this.username = username;
+		this.password = password;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.cellNum = cellNumber;
+		this.emergencyNum = emergencyNumber;
 	}
 
 
@@ -48,11 +59,17 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getFullname() {
-		return fullname;
+	public String getFirstName() {
+		return firstName;
 	}
-	public void setFullname(String fullname) {
-		this.fullname = fullname;
+	public void setFirstname(String fname) {
+		this.firstName = fname;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lname) {
+		this.lastName = lname;
 	}
 	public String getAddress() {
 		return address;
@@ -60,16 +77,16 @@ public class User {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public String getCellNum() {
+	public int getCellNum() {
 		return cellNum;
 	}
-	public void setCellNum(String cellNum) {
+	public void setCellNum(int cellNum) {
 		this.cellNum = cellNum;
 	}
-	public String getEmergencyNum() {
+	public int getEmergencyNum() {
 		return emergencyNum;
 	}
-	public void setEmergencyNum(String emergencyNum) {
+	public void setEmergencyNum(int emergencyNum) {
 		this.emergencyNum = emergencyNum;
 	}
 	public String getEmail() {

@@ -11,8 +11,7 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-
-import constants.credential;
+import constants.Credential;
 import constants.Sql;
 ;
 
@@ -27,10 +26,10 @@ public class UserDAO {
 	private UserDAO(){
 		
 				ds = new MysqlDataSource();
-			    ds.setUser(credential.USER);
-			    ds.setPassword(credential.PASSWORD);
+			    ds.setUser(Credential.USER);
+			    ds.setPassword(Credential.PASSWORD);
 			    ds.setUseSSL(false);
-			    ds.setDatabaseName(credential.DATABASE);
+			    ds.setDatabaseName(Credential.DATABASE);
 
 			    
 			System.out.println("DataSource connected......");
@@ -84,14 +83,13 @@ public class UserDAO {
 		
 		try {
 			conn = getConnection();
-			String sql = "SELECT fullname, address, cellNum, emergencyNum, email, venmoHandle, groupId, checkInStatus where username=? AND password=?";
+			String sql = Sql.LOGIN;
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, username);
 			pstmt.setString(2, password);
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
-				user = new User(username, password, rs.getString(1), rs.getString(2), 
-						rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6));
+				user = new User(username, password, rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4));
 			}
 			closeAll(rs, pstmt, conn);
 		}catch (SQLException e) {
@@ -197,15 +195,15 @@ public class UserDAO {
 	//Test here DAO methods here
 	public static void main(String args[] ) {
 		UserDAO dao = UserDAO.getInstanceOf();
-		boolean isUserNameAvailable = false;
-		try {
-			isUserNameAvailable = dao.isUsernaemAvailable("aaa");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		User jayBitch = null;
+		jayBitch = dao.login("aaa", "aaa");
+		if (jayBitch == null) {
+			System.out.println("null");
+		}
+		else {
+			System.out.println(jayBitch.getCellNum());
 		}
 		
-		System.out.println(isUserNameAvailable);
 
 	}
 }
