@@ -3,3 +3,4 @@
 .settings
 src/constants/Credential.java
 /build
+.DS_Store
