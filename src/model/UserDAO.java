@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-
 import constants.Credential;
 import constants.Sql;
 ;
@@ -68,6 +67,29 @@ public class UserDAO {
 			System.out.println("connection close error");
 			sqle.printStackTrace();
 		}
+	}
+	
+	public User login(String username, String password) {
+		User user = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = getConnection();
+			String sql = Sql.LOGIN;
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, username);
+			pstmt.setString(2, password);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				user = new User(username, password, rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4));
+			}
+			closeAll(rs, pstmt, conn);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return user;
 	}
 	
 	
@@ -167,15 +189,15 @@ public class UserDAO {
 	//Test here DAO methods here
 	public static void main(String args[] ) {
 		UserDAO dao = UserDAO.getInstanceOf();
-		boolean isUserNameAvailable = false;
-		try {
-			isUserNameAvailable = dao.isUsernaemAvailable("aaa");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		User jayBitch = null;
+		jayBitch = dao.login("aaa", "aaa");
+		if (jayBitch == null) {
+			System.out.println("null");
+		}
+		else {
+			System.out.println(jayBitch.getCellNum());
 		}
 		
-		System.out.println(isUserNameAvailable);
 
 	}
 }
