@@ -8,4 +8,5 @@ public interface Sql {
 	public static final String CREATE_HOUSE = "UPDATE User SET house_handle=? WHERE username=?";
 	public static final String GET_USER = "SELECT password, first_name, last_name, cell_number, emerg_number, email, house_handle FROM User WHERE username=?";
 	public static final String CHECK_HOUSEHANDLE = "SELECT house_handle FROM User WHERE house_handle=?";
+	public static final String GET_USERS = "SELECT username, password, first_name, last_name, cell_number, emerg_number, email, house_handle FROM User WHERE house_handle=?";
 }

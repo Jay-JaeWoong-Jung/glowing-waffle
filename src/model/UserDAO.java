@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import constants.Credential;
@@ -250,6 +251,29 @@ public class UserDAO {
 		return true;
 	}
 	
+	public ArrayList<User> getUsers(String houseHandle) {
+		User user = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		ArrayList<User> listOfUsers = new ArrayList<User>();
+		try {
+			conn = getConnection();
+			String sql = Sql.GET_USERS;
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, houseHandle);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				user = new User(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getInt(6), rs.getString(7), rs.getString(8));
+				listOfUsers.add(user);
+			}
+			closeAll(rs, pstmt, conn);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return listOfUsers;
+	}
+	
 //	
 //	public static void increment(String usr, String page){
 ////		System.out.println("getting username from increment: "+ usr+" "+ page);
@@ -324,11 +348,14 @@ public class UserDAO {
 	//Test here DAO methods here
 	public static void main(String args[] ) {
 		UserDAO dao = UserDAO.getInstanceOf();
-//		User jayBitch = new User("jschaider", "pokemon", "jacob", "schaider", 708708, 0000, "jschaider@mgail.com");
-		boolean work = dao.updateHouseHandle("aaa", "My House");
-		if (work) {
-			System.out.println("success");
+		ArrayList<User> jayBitch = dao.getUsers("My House");
+		for (User user : jayBitch) {
+			System.out.println(user.getFirstName());
 		}
+//		boolean work = dao.updateHouseHandle("aaa", "My House");
+//		if (work) {
+//			System.out.println("success");
+//		}
 
 	}
 }
