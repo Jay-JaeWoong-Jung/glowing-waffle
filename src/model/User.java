@@ -36,7 +36,7 @@ public class User {
 		this.password = password;
 	}
 	
-
+	//constructor used when creating user that already exists
 	public User (String username, String password, String firstName, String lastName, int cellNumber, int emergencyNumber, String email, String houseHandle) {
 		super();
 		this.username = username;
