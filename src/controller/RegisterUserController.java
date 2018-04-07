@@ -28,6 +28,6 @@ public class RegisterUserController implements Controller {
 		user = new User(username, password, firstName, lastName, cellNumber, emergencyNumber, email);
 		HttpSession session = request.getSession();
 		session.setAttribute("user", user);
-		return new ModelAndView("HouseRegister.jsp", true);
+		return new ModelAndView("houseRegister.jsp", true);
 	}
 }

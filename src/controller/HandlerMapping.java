@@ -18,7 +18,7 @@ public class HandlerMapping {
 		} else if (command.equals("login")) {
 			controller = new LoginController();
 		} else if (command.equals("creaetHouseHandle")) {
-			controller = new CreateHouseController();
+			controller = new RegisterHouseController();
 		} else if (command.equals("joinHouse")) {
 			controller = new JoinHouserController();
 		}
