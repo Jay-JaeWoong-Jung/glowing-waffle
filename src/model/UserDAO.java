@@ -201,7 +201,7 @@ public class UserDAO {
 		return result;
 	}
 	
-	public User getUser(String username, String password) {
+	public User getUser(String username) {
 		User user = null;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -212,10 +212,9 @@ public class UserDAO {
 			String sql = Sql.GET_USER;
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, username);
-			pstmt.setString(2, password);
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
-				user = new User(username, password, rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4), rs.getString(5), rs.getString(6));
+				user = new User(username, rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getString(7));
 			}
 			closeAll(rs, pstmt, conn);
 		}catch (SQLException e) {
@@ -224,7 +223,7 @@ public class UserDAO {
 		return user;
 	}
 	
-	public boolean createHouse(User user, String houseHandle) {
+	public boolean updateHouseHandle(String username, String houseHandle) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;	
 		try {
@@ -237,7 +236,6 @@ public class UserDAO {
 			pstmt = conn.prepareStatement(createHouse);
 			pstmt.setString(1, houseHandle);
 			pstmt.setString(2, username);
-			pstmt.setString(3, password);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -249,6 +247,7 @@ public class UserDAO {
 				e.printStackTrace();
 			}
         }
+		return true;
 	}
 	
 //	
@@ -323,13 +322,13 @@ public class UserDAO {
 	
 	
 	//Test here DAO methods here
-//	public static void main(String args[] ) {
-//		UserDAO dao = UserDAO.getInstanceOf();
-//		User jayBitch = null;
-//		boolean work = dao.registerUser("jschaider", "pokemon", "jacob", "schaider", 708708, 0000, "jschaider@mgail.com");
-//		if (work) {
-//			System.out.println("success");
-//		}
-//
-//	}
+	public static void main(String args[] ) {
+		UserDAO dao = UserDAO.getInstanceOf();
+//		User jayBitch = new User("jschaider", "pokemon", "jacob", "schaider", 708708, 0000, "jschaider@mgail.com");
+		boolean work = dao.updateHouseHandle("aaa", "My House");
+		if (work) {
+			System.out.println("success");
+		}
+
+	}
 }
