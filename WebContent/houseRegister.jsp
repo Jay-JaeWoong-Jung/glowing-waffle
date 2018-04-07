@@ -38,7 +38,7 @@
 	        
         <label for="houseHandle" class="sr-only">Your housing URL </label>
         <input type="text" name="houseHandle" class="form-control" placeholder="123mainStreet" required autofocus>
-		<input type="hidden" name= "creaetHouseHandle" value="getHouseHandle">         
+		<input type="hidden" name= "command" value="getHouseHandle">         
     		
 
         
