@@ -23,7 +23,7 @@ public class RegisterUserController implements Controller {
 		boolean regResult = UserDAO.getInstanceOf().registerUser(username, password, firstName, lastName, cellNumber, emergencyNumber, email);
 		
 		if (!regResult) {
-			return new ModelAndView("signup.jsp?registerFail=true", true);
+			return new ModelAndView("userRegister.jsp?registerFail=true", true);
 		}
 		user = new User(username, password, firstName, lastName, cellNumber, emergencyNumber, email);
 		HttpSession session = request.getSession();
