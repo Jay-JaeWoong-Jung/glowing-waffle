@@ -13,12 +13,18 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.*;
 import com.google.api.services.calendar.model.Calendar;
+import org.java_websocket.WebSocket;
+import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.WebSocketServer;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
 
-public class Client extends Thread{
+public class Client extends WebSocketServer implements Runnable{
+
+
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
@@ -32,24 +38,39 @@ public class Client extends Thread{
     String classCalendarId;
     String groupCalendarId;
 
+    // Status Of Roommates
+    String roommatesStatus;
+
     // Store the service;
     com.google.api.services.calendar.Calendar service;
 
     // Map from a string to its calendar ID
     HashMap<String, String> summaryToId;
 
+    private static int TCP_PORT = 4444;
+
+    private Set<WebSocket> conns;
+
     // Client Constructor
-    public Client(String ipAddress, int port) throws IOException {
+    public Client(String username, String ipAddress, int port) throws IOException {
+        super(new InetSocketAddress(TCP_PORT));
+        conns = new HashSet<>();
+        this.start();
+
         // get oath credential
         service = getCalendarService();
 
         // Create the connection between client and server
-        System.out.println("Trying to connect to " + port + ":" + port);
+        System.out.println("Trying to connect to " + port +  ":" + port);
         Socket s = new Socket(ipAddress, port);
         oos = new ObjectOutputStream(s.getOutputStream());
         ois = new ObjectInputStream(s.getInputStream());
+
+        //new Client().start();
         Scanner scan = new Scanner(System.in);
-        this.start();
+
+        //TODO NEED TO CHECK WHETHER THIS IS A NEW LOGIN CLIENT OR THE CLIENT WHO HAS ALREADY SIGNED IN
+
 
         // Retrieve a specific calendar list entry
         summaryToId = new HashMap<>();
@@ -67,23 +88,25 @@ public class Client extends Thread{
             pageToken = calendarList.getNextPageToken();
         } while (pageToken != null);
 
+
         // choose calendar
         socialCalendarId = chooseCalendar(scan, summaryToId);
         socialCalendar= service.calendars().get(socialCalendarId).execute();
         classCalendarId =  chooseCalendar(scan, summaryToId);
         classCalendar = service.calendars().get(classCalendarId).execute();
+        //TODO ADD TO DATABASE
 
         //TODO ASK WHETHER THEY ALREADY HAVE A CALENDAR WHICH CAN ACT LIKE A GROUP CALENDAR,
         //TODO IF YES THEN ENTER THE CHOOSE CALENDAR FUNCTION AGAIN, IF NO EXECUTE THE ADD
         //TODO EXECUTE THE ADD THE NEW CALENDAR FUNCTION
-        addCalendar();
+        //addCalendar();
 
         displayEvents(socialCalendarId);
 
         // TODO ADD EVENT FUNCTION
 //        Event groupEvent = addEvent();
- //       Command command = new Command(CommandType.GROUP_EVENT, groupEvent);
-  //      sendObject(command);
+        //       Command command = new Command(CommandType.GROUP_EVENT, groupEvent);
+        //      sendObject(command);
 
         /*
         String calendarId = "primary";
@@ -93,10 +116,119 @@ public class Client extends Thread{
         */
         // TODO ADD THE TOGGLE PART
 
-        while (true) {
-            String newEvent = scan.next();
+        while(true) {
+            try {
+                Command returnItem = (Command) ois.readObject();
+                if (returnItem.getCommandType().equals(CommandType.GROUP_EVENT)) {
+                    Event newEvent = (Event) returnItem.getObj();
+                    service.events().calendarImport(groupCalendarId, newEvent).execute();
+                } else {
+                    // TODO STATUS TOGGLE SHOULD I HAVE A LIST OF GROUP MEMBER STATUS?
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
+
+    @Override
+    public void onOpen(WebSocket conn, ClientHandshake handshake) {
+        conns.add(conn);
+        System.out.println("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+    }
+
+    @Override
+    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        conns.remove(conn);
+        System.out.println("Closed connection to " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+    }
+
+    @Override
+    public void onMessage(WebSocket conn, String message) {
+        System.out.println("Message from client: " + message);
+
+
+        Command command = new Command(CommandType.GROUP_EVENT, message);
+        this.sendObject(command);
+    }
+
+    @Override
+    public void onError(WebSocket conn, Exception ex) {
+        //ex.printStackTrace();
+        if (conn != null) {
+            conns.remove(conn);
+            // do some thing if required
+        }
+        System.out.println("ERROR from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+    }
+
+    public void updatedStatus(String status){
+        //TODO WRITE TO DATABSE & OR / UPDATED HERE?
+        roommatesStatus = status;
+        sendToggle(roommatesStatus);
+    }
+
+    // Toggle
+    public void sendToggle(String status){
+        Command command = new Command(CommandType.TOGGLE_EVNET, status);
+        this.sendObject(command);
+    }
+
+    // Check String
+    public String displayPrimary(String string){
+        if(string.contains("@")){
+            return "primary";
+        }
+        else{
+            return string;
+        }
+    }
+
+    // Event builder
+    public static Event addEvent(){
+        // TODO CREATE AN ADD EVENT
+        Event event = new Event()
+                .setSummary("Google I/O 2015")
+                .setLocation("800 Howard St., San Francisco, CA 94103")
+                .setDescription("A chance to hear more about Google's developer products.");
+
+        // set the date and time of the event
+        DateTime startDateTime = new DateTime("2015-05-28T09:00:00-07:00");
+        EventDateTime start = new EventDateTime()
+                .setDateTime(startDateTime)
+                .setTimeZone("America/Los_Angeles");
+        event.setStart(start);
+
+        DateTime endDateTime = new DateTime("2015-05-28T17:00:00-07:00");
+        EventDateTime end = new EventDateTime()
+                .setDateTime(endDateTime)
+                .setTimeZone("America/Los_Angeles");
+        event.setEnd(end);
+
+        // set recurrence of the event
+        String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=2"};
+        event.setRecurrence(Arrays.asList(recurrence));
+
+        // set the attendees of the event
+        EventAttendee[] attendees = new EventAttendee[] {
+                new EventAttendee().setEmail("lpage@example.com"),
+                new EventAttendee().setEmail("sbrin@example.com"),
+        };
+
+        event.setAttendees(Arrays.asList(attendees));
+
+        // set the reminder of the event
+        EventReminder[] reminderOverrides = new EventReminder[] {
+                new EventReminder().setMethod("email").setMinutes(24 * 60),
+                new EventReminder().setMethod("popup").setMinutes(10),
+        };
+        Event.Reminders reminders = new Event.Reminders()
+                .setUseDefault(false)
+                .setOverrides(Arrays.asList(reminderOverrides));
+        event.setReminders(reminders);
+        return event;
+    }
+
 
     // Choose the calendar you want to use as the personal/social calendar
     public String chooseCalendar(Scanner scan, HashMap<String, String> summaryToId ){
@@ -119,18 +251,6 @@ public class Client extends Thread{
         }
     }
 
-    // This is the multi-threading part
-    public void run() {
-        while (true) {
-            try {
-                Event newEvent = (Event)ois.readObject();
-                service.events().calendarImport(groupCalendarId, newEvent).execute();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     // Create a new calendar and add it into the current calendar list
     public void addCalendar()
     {
@@ -147,15 +267,15 @@ public class Client extends Thread{
 
     public void displayEvents(String calendarId){
         try{
-        // Retrieve the user account
-        com.google.api.services.calendar.model.Calendar alreadyExistedCalendar =
-                service.calendars().get(calendarId).execute();
+            // Retrieve the user account
+            com.google.api.services.calendar.model.Calendar alreadyExistedCalendar =
+                    service.calendars().get(calendarId).execute();
 
-        System.out.println(alreadyExistedCalendar.getSummary());
+            System.out.println(alreadyExistedCalendar.getSummary());
 
-        /* List the next 10 events from the primary calendar. */
-        DateTime now = new DateTime(System.currentTimeMillis());
-        Events events = null;
+            /* List the next 10 events from the primary calendar. */
+            DateTime now = new DateTime(System.currentTimeMillis());
+            Events events = null;
             events = service.events().list(calendarId)
                     .setMaxResults(10)
                     .setTimeMin(now)
@@ -163,18 +283,18 @@ public class Client extends Thread{
                     .setSingleEvents(true)
                     .execute();
 
-        List<Event> items = events.getItems();
-        if (items.size() == 0) {
-            System.out.println("No upcoming events found.");
-        } else {
-            System.out.println("Upcoming events");
-            for (Event event : items) {
-                DateTime start = event.getStart().getDateTime();
-                if (start == null) {
-                    start = event.getStart().getDate();
-                }
-                System.out.printf("%s (%s)\n", event.getSummary(), start);
-            } }
+            List<Event> items = events.getItems();
+            if (items.size() == 0) {
+                System.out.println("No upcoming events found.");
+            } else {
+                System.out.println("Upcoming events");
+                for (Event event : items) {
+                    DateTime start = event.getStart().getDateTime();
+                    if (start == null) {
+                        start = event.getStart().getDate();
+                    }
+                    System.out.printf("%s (%s)\n", event.getSummary(), start);
+                } }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -261,51 +381,6 @@ public class Client extends Thread{
                 .build();
     }
 
-    // Event builder
-    public static Event addEvent(){
-        Event event = new Event()
-                .setSummary("Google I/O 2015")
-                .setLocation("800 Howard St., San Francisco, CA 94103")
-                .setDescription("A chance to hear more about Google's developer products.");
-
-        // set the date and time of the event
-        DateTime startDateTime = new DateTime("2015-05-28T09:00:00-07:00");
-        EventDateTime start = new EventDateTime()
-                .setDateTime(startDateTime)
-                .setTimeZone("America/Los_Angeles");
-        event.setStart(start);
-
-        DateTime endDateTime = new DateTime("2015-05-28T17:00:00-07:00");
-        EventDateTime end = new EventDateTime()
-                .setDateTime(endDateTime)
-                .setTimeZone("America/Los_Angeles");
-        event.setEnd(end);
-
-        // set recurrence of the event
-        String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=2"};
-        event.setRecurrence(Arrays.asList(recurrence));
-
-        // set the attendees of the event
-        EventAttendee[] attendees = new EventAttendee[] {
-                new EventAttendee().setEmail("lpage@example.com"),
-                new EventAttendee().setEmail("sbrin@example.com"),
-        };
-
-        event.setAttendees(Arrays.asList(attendees));
-
-        // set the reminder of the event
-        EventReminder[] reminderOverrides = new EventReminder[] {
-                new EventReminder().setMethod("email").setMinutes(24 * 60),
-                new EventReminder().setMethod("popup").setMinutes(10),
-        };
-        Event.Reminders reminders = new Event.Reminders()
-                .setUseDefault(false)
-                .setOverrides(Arrays.asList(reminderOverrides));
-        event.setReminders(reminders);
-        return event;
-    }
-
-
     public void sendObject(Command command) {
         try {
             if(oos == null)
@@ -320,6 +395,7 @@ public class Client extends Thread{
     }
 
     public static void main(String[] args) throws IOException {
-        Client player = new Client("localhost", 6789);
+        Client player = new Client( "Username","localhost", 6789);
+       // Client player = new Client( "Username","2001:0:9d38:90d7:ec:2503:bb4a:31ee", 6789);
     }
 }

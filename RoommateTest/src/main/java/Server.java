@@ -1,13 +1,19 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.*;
 import java.util.Vector;
 
-public class Server {
-    private Vector<ServerThread> serverThreads;
+import javax.websocket.server.ServerEndpoint;
 
+
+@ServerEndpoint(value = "/ws")
+public class Server{
+    private static HashMap<String, ServerThread> threadMap = new HashMap<>();
+    private Vector<ServerThread> serverThreads;
     public static void main(String[] args){
         Server server = new Server(6789);
+
     }
 
     public Server(int port) {
@@ -20,7 +26,7 @@ public class Server {
                 Socket s = ss.accept(); // blocking
                 System.out.println("Connection from: " + s.getInetAddress());
                 ServerThread st = new ServerThread(s, this);
-                serverThreads.add(st);
+                serverThreads.add(st); //TODO ADD THE THREAD INTO THE SERVERTHREAD
             }
         } catch (IOException ioe) {
             System.out.println("ioe in ChatRoom constructor: " + ioe.getMessage());
@@ -31,19 +37,25 @@ public class Server {
         switch (command.getCommandType()){
             case GROUP_EVENT:
                 groupEvent(command, thread);
+            case TOGGLE_EVNET:
+                toggleEvent(command,thread);
         }
 
     }
 
+    public void toggleEvent(Command command, ServerThread thread){
+        //broadcast(command, thread);
+    }
 
     public void groupEvent(Command command, ServerThread thread){
         // TODO
+        System.out.println((String)command.getObj());
         //Event to be broadcasted ;
-        broadcast(command,thread);
-
+        //broadcast(command,thread);
     }
 
     // broadcast function
+    /*
     public void broadcast(Command command, ServerThread thread) {
         //if (message != null) {
         if (command != null) {
@@ -57,7 +69,6 @@ public class Server {
             }
         }
     }
-
-
+    */
 
 }

@@ -63,7 +63,7 @@ set CMD_LINE_ARGS=%*
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\httpclient-4.0.1.jar;%APP_HOME%\lib\jackson-core-2.1.3.jar;%APP_HOME%\lib\jsr305-1.3.9.jar;%APP_HOME%\lib\google-oauth-client-java6-1.23.0.jar;%APP_HOME%\lib\google-oauth-client-1.23.0.jar;%APP_HOME%\lib\google-http-client-1.23.0.jar;%APP_HOME%\lib\jetty-6.1.26.jar;%APP_HOME%\lib\Roommate-1.0.jar;%APP_HOME%\lib\commons-logging-1.1.1.jar;%APP_HOME%\lib\google-api-services-calendar-v3-rev296-1.23.0.jar;%APP_HOME%\lib\httpcore-4.0.1.jar;%APP_HOME%\lib\google-oauth-client-jetty-1.23.0.jar;%APP_HOME%\lib\commons-codec-1.3.jar;%APP_HOME%\lib\google-http-client-jackson2-1.23.0.jar;%APP_HOME%\lib\guava-jdk5-17.0.jar;%APP_HOME%\lib\google-api-client-1.23.0.jar;%APP_HOME%\lib\servlet-api-2.5-20081211.jar;%APP_HOME%\lib\jetty-util-6.1.26.jar
+set CLASSPATH=%APP_HOME%\lib\httpclient-4.0.1.jar;%APP_HOME%\lib\jackson-core-2.1.3.jar;%APP_HOME%\lib\jsr305-1.3.9.jar;%APP_HOME%\lib\google-oauth-client-java6-1.23.0.jar;%APP_HOME%\lib\google-oauth-client-1.23.0.jar;%APP_HOME%\lib\google-http-client-1.23.0.jar;%APP_HOME%\lib\jetty-6.1.26.jar;%APP_HOME%\lib\Roommate-1.0.jar;%APP_HOME%\lib\commons-logging-1.1.1.jar;%APP_HOME%\lib\google-api-services-calendar-v3-rev296-1.23.0.jar;%APP_HOME%\lib\httpcore-4.0.1.jar;%APP_HOME%\lib\google-oauth-client-jetty-1.23.0.jar;%APP_HOME%\lib\commons-codec-1.3.jar;%APP_HOME%\lib\google-http-client-jackson2-1.23.0.jar;%APP_HOME%\lib\guava-jdk5-17.0.jar;%APP_HOME%\lib\javax.servlet-api-3.0.1.jar;%APP_HOME%\lib\google-api-client-1.23.0.jar;%APP_HOME%\lib\servlet-api-2.5-20081211.jar;%APP_HOME%\lib\jetty-util-6.1.26.jar
 
 @rem Execute Roommate
 "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %ROOMMATE_OPTS%  -classpath "%CLASSPATH%" Server %CMD_LINE_ARGS%
