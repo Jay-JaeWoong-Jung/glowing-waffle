@@ -13,8 +13,8 @@ public class HandlerMapping {
 	
 	public Controller createController(String command) {
 		Controller controller = null;
-		if(command.equals("registerMember")){
-			controller = new RegisterMemberController();
+		if(command.equals("registerUser")){
+			controller = new RegisterUserController();
 		} else if (command.equals("login")) {
 			controller = new LoginController();
 		}

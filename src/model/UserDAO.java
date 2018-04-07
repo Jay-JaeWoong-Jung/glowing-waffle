@@ -92,7 +92,7 @@ public class UserDAO {
 		return user;
 	}
 	
-	public boolean registerMember(String username, String password, String firstName, String lastName, 
+	public boolean registerUser(String username, String password, String firstName, String lastName, 
 			int cellNumber, int emergencyNumber, String email) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;	
@@ -246,13 +246,13 @@ public class UserDAO {
 	
 	
 	//Test here DAO methods here
-	public static void main(String args[] ) {
-		UserDAO dao = UserDAO.getInstanceOf();
-		User jayBitch = null;
-		boolean work = dao.registerMember("jschaider", "pokemon", "jacob", "schaider", 708708, 0000, "jschaider@mgail.com");
-		if (work) {
-			System.out.println("success");
-		}
-
-	}
+//	public static void main(String args[] ) {
+//		UserDAO dao = UserDAO.getInstanceOf();
+//		User jayBitch = null;
+//		boolean work = dao.registerUser("jschaider", "pokemon", "jacob", "schaider", 708708, 0000, "jschaider@mgail.com");
+//		if (work) {
+//			System.out.println("success");
+//		}
+//
+//	}
 }
