@@ -174,6 +174,83 @@ public class UserDAO {
 		return result;
 	}
 	
+	public boolean isHouseHandleAvailable(String houseHandle) {
+		boolean result = false;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(Sql.CHECK_HOUSEHANDLE);
+			pstmt.setString(1, houseHandle);
+			rs = pstmt.executeQuery();
+			if (!rs.next()) {
+				result = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(rs, pstmt, conn);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	public User getUser(String username, String password) {
+		User user = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = getConnection();
+			String sql = Sql.GET_USER;
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, username);
+			pstmt.setString(2, password);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				user = new User(username, password, rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4), rs.getString(5), rs.getString(6));
+			}
+			closeAll(rs, pstmt, conn);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return user;
+	}
+	
+	public boolean createHouse(User user, String houseHandle) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;	
+		try {
+			boolean houseHandleAvailable = isHouseHandleAvailable(houseHandle);
+			if (!houseHandleAvailable) {
+				return false;
+			}
+			conn = getConnection();
+			String createHouse = Sql.CREATE_HOUSE;
+			pstmt = conn.prepareStatement(createHouse);
+			pstmt.setString(1, houseHandle);
+			pstmt.setString(2, username);
+			pstmt.setString(3, password);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+        } finally {
+        	try {
+				closeAll(rs, pstmt, conn);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+	}
+	
 //	
 //	public static void increment(String usr, String page){
 ////		System.out.println("getting username from increment: "+ usr+" "+ page);

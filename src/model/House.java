@@ -3,29 +3,19 @@ package model;
 import java.util.ArrayList;
 
 public class House {
-	private String houseName;
-	private int groupId;
+	private String houseHandle;
 	private ArrayList<User> roommates;
 	
-	public House (String houseName, int groupId) {
-		this.houseName = houseName;
-		this.groupId = groupId;
+	public House (String houseHandle) {
+		this.houseHandle = houseHandle;
 	}
 	
-	public String getHouseName() {
-		return houseName;
+	public String getHouseHandle() {
+		return houseHandle;
 	}
 	
-	public void setHouseName(String houseName) {
-		this.houseName = houseName;
-	}
-	
-	public int getGroupId() {
-		return groupId;
-	}
-	
-	public void setGroupId(int groupId) {
-		this.groupId = groupId;
+	public void setHouseHandle(String houseHandle) {
+		this.houseHandle = houseHandle;
 	}
 	
 	public ArrayList<User> getRooommates() {

@@ -35,6 +35,19 @@ public class User {
 		this.username = username;
 		this.password = password;
 	}
+	
+
+	public User (String username, String password, String firstName, String lastName, int cellNumber, int emergencyNumber, String email, String houseHandle) {
+		super();
+		this.username = username;
+		this.password = password;
+		this.firstName = firstName;
+		this.lastname = lastName;
+		this.cellNumber = cellNumber;
+		this.emergencyNumber = emergencyNumber;
+		this.email = email;
+		this.houseHandle = houseHandle;
+	}
 
 
 //setters and getters
