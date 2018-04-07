@@ -17,6 +17,10 @@ public class HandlerMapping {
 			controller = new RegisterUserController();
 		} else if (command.equals("login")) {
 			controller = new LoginController();
+		} else if (command.equals("creaetHouseHandle")) {
+			
+		} else if (command.equals("getHouseHandle")) {
+			
 		}
 		
 		System.out.println("inside handler "+controller+"controller created");

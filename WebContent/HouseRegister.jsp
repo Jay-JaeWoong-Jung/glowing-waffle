@@ -26,31 +26,21 @@
 
       <form class="form-request-help" method="POST" action="DispatcherServlet">
         <h2 class="form-request-help-heading text-center">Roommate</h2>
-        <label for="firstname" class="sr-only">type your full name </label>
-        <input type="text" name="firstName" class="form-control" placeholder="Enter your first name" required autofocus>
+        <label for="houseHandle" class="sr-only">What is your housing group called </label>
+        <input type="text" name="houseHandle" class="form-control" placeholder="Ex. 37mainStreet" required autofocus>
+        <input type="hidden" name="creaetHouseHandle">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">submit</button>
         
-        <label for="lastname" class="sr-only">type your full name </label>
-        <input type="text" name="lastName" class="form-control" placeholder="Enter your last name" required autofocus>
-        
-    		<label for="email" class="sr-only">type your full name </label>
-        <input type="text" name="email" class="form-control" placeholder="Enter your email" required autofocus>
+	 </form>
+	 
+	 
+	  <form class="form-request-help" method="POST" action="DispatcherServlet">
+	        
+        <label for="houseHandle" class="sr-only">Your housing URL </label>
+        <input type="text" name="houseHandle" class="form-control" placeholder="123mainStreet" required autofocus>
+		<input type="hidden" name="getHouseHandle">         
+    		
 
-		<label for="username" class="sr-only">type your full name </label>
-    	    <input type="text" name="username" class="form-control" placeholder="Enter a username" required autofocus>
-        
-        <label for="password" class="sr-only">type your full name </label>
-        <input type="text" name="password" class="form-control" placeholder="Enter your password" required autofocus>
-        
-        <label for="cellNum" class="sr-only">type your full name </label>
-        <input type="text" name="cellNum" class="form-control" placeholder="Enter your phone number" required autofocus>
-        
-        <label for="emergencyNum" class="sr-only">type your emergency number </label>
-        <input type="text" name="emergencyNum" class="form-control" placeholder="Enter your emergency contact's phone number" required autofocus>
-<!--         
-        <label for="venmoHandle" class="sr-only">type your venmo handle </label>
-        <input type="text" id="venmoHandle" class="form-control" placeholder="Enter your venmo handle" required autofocus>  -->
-        <input type="hidden" name="command" value="registerUser">       
-        
         
         <button class="btn btn-lg btn-primary btn-block" type="submit">submit</button>
       </form>
