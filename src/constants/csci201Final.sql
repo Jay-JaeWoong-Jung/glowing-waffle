@@ -3,8 +3,7 @@ create database csci201Final;
 use csci201Final;
 
 CREATE TABLE user (
-  id int(11) primary key not null auto_increment,
-  username varchar(50) not null,
+  username varchar(50) primary key not null,
   password varchar(50) not null,
   first_name varchar(50) not null,
   last_name varchar(50) not null,
