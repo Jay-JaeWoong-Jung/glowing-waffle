@@ -175,7 +175,7 @@ public class UserDAO {
 		return result;
 	}
 	
-	public boolean isHouseHandleAvailable(String houseHandle) {
+	public boolean doesHouseHandleExist(String houseHandle) {
 		boolean result = false;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -186,7 +186,7 @@ public class UserDAO {
 			pstmt = conn.prepareStatement(Sql.CHECK_HOUSEHANDLE);
 			pstmt.setString(1, houseHandle);
 			rs = pstmt.executeQuery();
-			if (!rs.next()) {
+			if (rs.next()) {
 				result = true;
 			}
 		} catch (SQLException e) {
@@ -224,16 +224,43 @@ public class UserDAO {
 		return user;
 	}
 	
-	public boolean updateHouseHandle(String username, String houseHandle) {
+	public boolean joinHouseHandle(String username, String houseHandle) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;	
 		try {
-			boolean houseHandleAvailable = isHouseHandleAvailable(houseHandle);
-			if (!houseHandleAvailable) {
+			boolean doesHouseHandleExist = doesHouseHandleExist(houseHandle);
+			if (!doesHouseHandleExist) {
 				return false;
 			}
 			conn = getConnection();
-			String createHouse = Sql.CREATE_HOUSE;
+			String createHouse = Sql.UPDATE_HOUSEHANDLE;
+			pstmt = conn.prepareStatement(createHouse);
+			pstmt.setString(1, houseHandle);
+			pstmt.setString(2, username);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+        } finally {
+        	try {
+				closeAll(rs, pstmt, conn);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+		return true;
+	}
+	
+	public boolean createHouseHandle(String username, String houseHandle) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;	
+		try {
+			boolean doesHouseHandleExist = doesHouseHandleExist(houseHandle);
+			if (doesHouseHandleExist) {
+				return false;
+			}
+			conn = getConnection();
+			String createHouse = Sql.UPDATE_HOUSEHANDLE;
 			pstmt = conn.prepareStatement(createHouse);
 			pstmt.setString(1, houseHandle);
 			pstmt.setString(2, username);
@@ -348,14 +375,15 @@ public class UserDAO {
 	//Test here DAO methods here
 	public static void main(String args[] ) {
 		UserDAO dao = UserDAO.getInstanceOf();
-		ArrayList<User> jayBitch = dao.getUsers("My House");
-		for (User user : jayBitch) {
-			System.out.println(user.getFirstName());
-		}
-//		boolean work = dao.updateHouseHandle("aaa", "My House");
-//		if (work) {
-//			System.out.println("success");
+		//ArrayList<User> jayBitch = dao.getUsers("My House");
+		boolean work = dao.joinHouseHandle("jschaider", "My House 2");
+//		for (User user : jayBitch) {
+//			System.out.println(user.getFirstName());
 //		}
+//		boolean work = dao.updateHouseHandle("aaa", "My House");
+		if (!work) {
+			System.out.println("false");
+		}
 
 	}
 }

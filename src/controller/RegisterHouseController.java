@@ -16,11 +16,12 @@ public class RegisterHouseController implements Controller {
 		User user = (User) session.getAttribute("user");
 		String username = user.getUsername();
 		String houseHandle = request.getParameter("houseHandle");
-		String url = "houseRegister.jsp?registerFail=true";
+		String url = "houseRegister.jsp";
 		
-		boolean updateSuccess = UserDAO.getInstanceOf().updateHouseHandle( username, houseHandle);
-		if(updateSuccess) {
+		boolean createHouseHandle = UserDAO.getInstanceOf().createHouseHandle(username, houseHandle);
+		if(createHouseHandle) {
 			House house = new House(houseHandle);
+			house.addRoommate(user);
 			session.setAttribute("house", house);
 			url = "dashboard.jsp";
 		}
