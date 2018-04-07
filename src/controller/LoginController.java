@@ -1,5 +1,7 @@
 package controller;
 
+import java.io.PrintWriter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -13,6 +15,8 @@ public class LoginController implements Controller {
 	public ModelAndView HandleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
+		
+		PrintWriter out = response.getWriter();
 		
 		User user = UserDAO.getInstanceOf().login(username, password);
 		if (user != null) {

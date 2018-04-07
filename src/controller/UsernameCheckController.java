@@ -9,7 +9,7 @@ import model.UserDAO;
 public class UsernameCheckController {
 	public ModelAndView HandleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String username = request.getParameter("username");
-		boolean doesExist = UserDAO.getInstanceOf().isUsernaemAvailable(username);
+		boolean doesExist = UserDAO.getInstanceOf().isUsernameAvailable(username);
 		if (!doesExist) {
 			HttpSession session = request.getSession();
 			session.setAttribute("doesExist", doesExist);

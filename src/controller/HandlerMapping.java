@@ -13,10 +13,10 @@ public class HandlerMapping {
 	
 	public Controller createController(String command) {
 		Controller controller = null;
-		if(command.equals("singup")){
-		//	controller = new SingUpController();
-		} else if (command.equals("signin")) {
-		//	controller = new SingInController();
+		if(command.equals("registerMember")){
+			controller = new RegisterMemberController();
+		} else if (command.equals("login")) {
+			controller = new LoginController();
 		}
 		
 		System.out.println("inside handler "+controller+"controller created");

@@ -30,13 +30,13 @@ public class UserDAO {
 	
 	
 	}
-	public void closeAll(PreparedStatement pstmt,Connection con) throws SQLException{
+	public void closeAll(PreparedStatement pstmt, Connection con) throws SQLException{
 		if(pstmt!=null)
 			pstmt.close();
 		if(con!=null)
 			con.close();
 	}
-	public void closeAll(ResultSet rs,PreparedStatement pstmt,Connection con) throws SQLException{
+	public void closeAll(ResultSet rs,PreparedStatement pstmt, Connection con) throws SQLException{
 		if(rs!=null)
 			rs.close();
 		closeAll(pstmt, con);
@@ -83,7 +83,7 @@ public class UserDAO {
 			pstmt.setString(2, password);
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
-				user = new User(username, password, rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4));
+				user = new User(username, password, rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4), rs.getString(5));
 			}
 			closeAll(rs, pstmt, conn);
 		}catch (SQLException e) {
@@ -92,17 +92,45 @@ public class UserDAO {
 		return user;
 	}
 	
-	public User registerMember(String username, String password, String firstName, String lastName, String address,
-			int cellNum, int emergencyNum, String email, String venmoHandle) throws SQLException {
-		User user = null;
+	public boolean registerMember(String username, String password, String firstName, String lastName, 
+			int cellNumber, int emergencyNumber, String email) {
 		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-				
+		PreparedStatement pstmt = null;	
+		try {
+			boolean usernameAvailable = isUsernameAvailable(username);
+			boolean emailAvailable = isEmailAvailable(email);
+			if (!usernameAvailable) {
+				return false;
+			}
+			if (!emailAvailable) {
+				return false;
+			}
+			conn = getConnection();
+			String insertIntoHouse = Sql.REGISTER;
+			pstmt = conn.prepareStatement(insertIntoHouse);
+			pstmt.setString(1, username);
+			pstmt.setString(2, password);
+			pstmt.setString(3, firstName);
+			pstmt.setString(4, lastName);
+			pstmt.setInt(5, cellNumber);
+			pstmt.setInt(6, emergencyNumber);
+			pstmt.setString(7, email);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+        } finally {
+        	try {
+				closeAll(rs, pstmt, conn);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+		return true;
 	}
 	
 	
-	public boolean isUsernaemAvailable(String username) throws SQLException {
+	public boolean isUsernameAvailable(String username) throws SQLException {
 		boolean result = false;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -123,6 +151,28 @@ public class UserDAO {
 		}
 		return result;
 	}// idCheck
+	
+	public boolean isEmailAvailable(String email) throws SQLException {
+		boolean result = false;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(Sql.CHECK_EMAIL);
+			pstmt.setString(1, email);
+			rs = pstmt.executeQuery();
+			if (!rs.next()) {
+				result = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeAll(rs, pstmt, conn);
+		}
+		return result;
+	}
 	
 //	
 //	public static void increment(String usr, String page){
@@ -199,14 +249,10 @@ public class UserDAO {
 	public static void main(String args[] ) {
 		UserDAO dao = UserDAO.getInstanceOf();
 		User jayBitch = null;
-		jayBitch = dao.login("aaa", "aaa");
-		if (jayBitch == null) {
-			System.out.println("null");
+		boolean work = dao.registerMember("jschaider", "pokemon", "jacob", "schaider", 708708, 0000, "jschaider@mgail.com");
+		if (work) {
+			System.out.println("success");
 		}
-		else {
-			System.out.println(jayBitch.getCellNum());
-		}
-		
 
 	}
 }
