@@ -18,9 +18,9 @@ public class HandlerMapping {
 		} else if (command.equals("login")) {
 			controller = new LoginController();
 		} else if (command.equals("creaetHouseHandle")) {
-			controller = new createHouseHandleController();
-		} else if (command.equals("getHouseHandle")) {
-			controller = new getHouserHandleController();
+			controller = new CreateHouseController();
+		} else if (command.equals("joinHouse")) {
+			controller = new JoinHouserController();
 		}
 		
 		System.out.println("inside handler "+controller+"controller created");
