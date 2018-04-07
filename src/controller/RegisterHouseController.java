@@ -16,7 +16,7 @@ public class RegisterHouseController implements Controller {
 		User user = (User) session.getAttribute("user");
 		String username = user.getUsername();
 		String houseHandle = request.getParameter("houseHandle");
-		String url = "houseRegister.jsp";
+		String url = "houseRegister.jsp?registerFail=true";
 		
 		boolean updateSuccess = UserDAO.getInstanceOf().updateHouseHandle( username, houseHandle);
 		if(updateSuccess) {
