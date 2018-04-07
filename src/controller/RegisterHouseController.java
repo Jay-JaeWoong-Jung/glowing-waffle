@@ -8,7 +8,7 @@ import model.House;
 import model.User;
 import model.UserDAO;
 
-public class CreateHouseController implements Controller {
+public class RegisterHouseController implements Controller {
 
 	@Override
 	public ModelAndView HandleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
