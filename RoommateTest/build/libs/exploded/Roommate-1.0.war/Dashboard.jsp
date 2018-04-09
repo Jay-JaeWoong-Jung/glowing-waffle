@@ -1,4 +1,7 @@
-
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="servlet.Client" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -40,7 +43,7 @@
                 socket.send("eventform," + document.eventform.message.value + "," + startingTime +
                 "," + endingTime + "," + radiobutton);
             }
-            else
+            else if(formname === "toggle")
             {
                 console.log("toggle");
                 // get the calendarId
@@ -57,11 +60,71 @@
 
                 socket.send("toggle ," + statusbutton);
             }
+            else if(formname === "class" || formname === "social"){
+                console.log("calendar");
+                var calendar = document.getElementsByName("calendarId");
+                var calendarButton;
+                for (var i = 0, length = calendar.length; i < length; i++) {
+                    console.log("Inside of the check button");
+                    if (calendar[i].checked) {
+                        calendarButton = (calendar[i].value);
+                        console.log(calendarButton);
+                        break;
+                    }
+                }
+
+                socket.send("calendar ," + formname + "," + calendarButton);
+            }
+            else{
+                console.log("groupCalendar");
+                socket.send("calendar ," + formname + "," + document.getElementById("summary").value);
+            }
             return false;
         }
     </script>
+    <%
+        ArrayList<String> theListOfMap = (ArrayList<String>) session.getAttribute("calendarList");
+    %>
 </head>
 <body onload="connectToServer()">
+
+<div class = "choose">
+    Choose your class calendar:
+    <form name = "classForm" onsubmit = "return sendMessage('class')">
+        <% for(int i = 0; i<theListOfMap.size(); i++){
+            %>
+        <input type = "radio" name = "calendarId" value = <%=theListOfMap.get(i)%>>
+        <%=theListOfMap.get(i)%>
+        <br/>
+        <%
+        }%>
+        <input type="submit" name="submit" value="choose calendar" />
+    </form>
+</div>
+
+
+<div class = "choose">
+    Choose your social calendar:
+    <form name = "socialForm" onsubmit = "return sendMessage('social')">
+        <% for(int i = 0; i<theListOfMap.size(); i++){
+        %>
+        <input type = "radio" name = "calendarId" value = <%=theListOfMap.get(i)%>>
+        <%=theListOfMap.get(i)%>
+        <br/>
+        <%
+            }%>
+        <input type="submit" name="submit" value="choose calendar" />
+    </form>
+</div>
+
+<div class = "choose">
+    Now you would add a group calendar, <br/>
+    How would you name your group calendar? <br/>
+    <form name = "groupForm" onsubmit = "return sendMessage('group')">
+        <input type = "text" id = "summary" name = "calendarSummary" >
+        <input type="submit" name="submit" value="choose calendar" />
+    </form>
+</div>
 
 <div class="responsive-iframe-container big-container">
     <iframe src="https://calendar.google.com/calendar/embed?src=jiayuehe%40usc.edu&ctz=America%2FLos_Angeles" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>

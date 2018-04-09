@@ -19,6 +19,8 @@ public class HandlerMapping {
 			controller = new LoginController();
 		} else if (command.equals("creaetHouseHandle")) {
 			controller = new RegisterHouseController();
+			Thread t = new Thread((RegisterHouseController)controller);
+			t.start();
 		} else if (command.equals("joinHouse")) {
 			controller = new JoinHouserController();
 		}

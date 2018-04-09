@@ -24,7 +24,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
 
-public class Client extends WebSocketServer implements Runnable{
+public class Client extends WebSocketServer{
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
@@ -45,13 +45,18 @@ public class Client extends WebSocketServer implements Runnable{
     com.google.api.services.calendar.Calendar service;
 
     // Map from a string to its calendar ID
-    HashMap<String, String> summaryToId;
+    private HashMap<String, String> summaryToId;
+
+    public HashMap<String, String> getSummaryToId() {
+        return summaryToId;
+    }
 
     // groupId of a person
     String groupId;
     private static int TCP_PORT = 4444;
 
     private Set<WebSocket> conns;
+
 
     // servlet.Client Constructor
     public Client(String username, String ipAddress, int port) throws IOException {
@@ -60,64 +65,37 @@ public class Client extends WebSocketServer implements Runnable{
         this.start();
 
         // get oath credential
-        if(this.service == null) {
-            service = getCalendarService();
+        service = getCalendarService();
 
-            // Create the connection between client and server
-            System.out.println("Trying to connect to " + port + ":" + port);
-            Socket s = new Socket(ipAddress, port);
-            oos = new ObjectOutputStream(s.getOutputStream());
-            ois = new ObjectInputStream(s.getInputStream());
+        // Create the connection between client and server
+        System.out.println("Trying to connect to " + port + ":" + port);
+        Socket s = new Socket(ipAddress, port);
+        oos = new ObjectOutputStream(s.getOutputStream());
+        ois = new ObjectInputStream(s.getInputStream());
 
-            //new servlet.Client().start();
-            Scanner scan = new Scanner(System.in);
-
-            //TODO NEED TO CHECK WHETHER THIS IS A NEW LOGIN CLIENT OR THE CLIENT WHO HAS ALREADY SIGNED IN
+        //TODO NEED TO CHECK WHETHER THIS IS A NEW LOGIN CLIENT OR THE CLIENT WHO HAS ALREADY SIGNED IN
 
 
-            // Retrieve a specific calendar list entry
-            summaryToId = new HashMap<>();
-            String pageToken = null;
-            do {
-                CalendarList calendarList = service.calendarList().list().setPageToken(pageToken).execute();
-                List<CalendarListEntry> items = calendarList.getItems();
+        // Retrieve a specific calendar list entry
+        summaryToId = new HashMap<>();
+        String pageToken = null;
+        do {
+            CalendarList calendarList = service.calendarList().list().setPageToken(pageToken).execute();
+            List<CalendarListEntry> items = calendarList.getItems();
 
 
-                for (CalendarListEntry calendarListEntry : items) {
-                    String id = calendarListEntry.getId();
-                    String summary = calendarListEntry.getSummary();
-                    summaryToId.put(summary, id);
-                }
-                pageToken = calendarList.getNextPageToken();
-            } while (pageToken != null);
+            for (CalendarListEntry calendarListEntry : items) {
+                String id = calendarListEntry.getId();
+                String summary = calendarListEntry.getSummary();
+                summaryToId.put(summary, id);
+            }
+            pageToken = calendarList.getNextPageToken();
+        } while (pageToken != null);
 
+        listen();
+    }
 
-            // choose calendar
-            socialCalendarId = chooseCalendar(scan, summaryToId);
-            socialCalendar = service.calendars().get(socialCalendarId).execute();
-            classCalendarId = chooseCalendar(scan, summaryToId);
-            classCalendar = service.calendars().get(classCalendarId).execute();
-        }
-
-        //TODO ADD TO DATABASE
-
-        //TODO ASK WHETHER THEY ALREADY HAVE A CALENDAR WHICH CAN ACT LIKE A GROUP CALENDAR,
-        //TODO IF YES THEN ENTER THE CHOOSE CALENDAR FUNCTION AGAIN, IF NO EXECUTE THE ADD
-        //TODO EXECUTE THE ADD THE NEW CALENDAR FUNCTION
-        //addCalendar();
-
-        displayEvents(socialCalendarId);
-
-        // TODO ADD EVENT FUNCTION
-
-        /*
-        String calendarId = "primary";
-        Event event = addEvent();
-        service.events().insert(calendarId, event).execute();
-        System.out.printf("Event created! ");
-        */
-        // TODO ADD THE TOGGLE PART
-
+    private void listen(){
         while(true) {
             try {
                 Command returnItem = (Command) ois.readObject();
@@ -147,11 +125,7 @@ public class Client extends WebSocketServer implements Runnable{
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        /*
-        System.out.println("Message");
-        servlet.Command command = new servlet.Command(servlet.CommandType.GROUP_EVENT, message);
-        this.sendObject(command);
-        */
+        System.out.println("We are in on message method");
         String[] parts = message.split(",");
         for(String string:parts){
             System.out.println(string);
@@ -162,7 +136,7 @@ public class Client extends WebSocketServer implements Runnable{
             command = new Command(CommandType.TOGGLE_EVNET, parts[1]);
             this.sendObject(command);
         }
-        else {
+        else if(parts[0].equals("eventform")){
             System.out.println("The command is add new event");
             //DateTime startingDateTime = new DateTime("2015-05-28T09:00:00-07:00");
             DateTime startingDateTime = new DateTime(parts[2]+":00-07:00");
@@ -186,7 +160,19 @@ public class Client extends WebSocketServer implements Runnable{
                     eventToCalendar(socialCalendarId,event);
                 }
             }
-
+        }
+        else{
+            System.out.println("User choose a calendar");
+            if (parts[1].equals("class")) {
+                classCalendarId = summaryToId.get(parts[2]);
+            }
+            else if(parts[1].equals("social")){
+                socialCalendarId = summaryToId.get(parts[2]);
+            }
+            else{
+                addCalendar(parts[2]);
+            }
+            System.out.println("Adding/Choosing the calendar");
         }
 
     }
@@ -321,8 +307,9 @@ public class Client extends WebSocketServer implements Runnable{
         }
     }
 
+
     // Create a new calendar and add it into the current calendar list
-    public void addCalendar()
+    public void addCalendar(String summary)
     {
         try {
             com.google.api.services.calendar.model.Calendar calendar = new Calendar();
@@ -466,6 +453,6 @@ public class Client extends WebSocketServer implements Runnable{
 
     public static void main(String[] args) throws IOException {
         Client player = new Client( "Username","localhost", 6789);
-       // servlet.Client player = new servlet.Client( "Username","2001:0:9d38:90d7:ec:2503:bb4a:31ee", 6789);
+        // servlet.Client player = new servlet.Client( "Username","2001:0:9d38:90d7:ec:2503:bb4a:31ee", 6789);
     }
 }
