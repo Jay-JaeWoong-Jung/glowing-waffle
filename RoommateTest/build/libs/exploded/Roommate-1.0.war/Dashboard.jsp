@@ -3,7 +3,7 @@
 <html>
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <title>Chat Client</title>
+    <title>Chat servlet.Client</title>
     <script>
         var socket;
         function connectToServer() {
