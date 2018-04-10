@@ -21,6 +21,8 @@ public class RegisterUserController implements Controller {
 		String emergencyNumString = request.getParameter("emergencyNum");
 		String email = request.getParameter("email");
 		
+		System.out.println(cellNumString + " " + emergencyNumString);
+		
 		// Created by Joseph. Check all fields to make sure that they are not blank before 
 		// checking the database to see if this set of inputs is valid
 		boolean empty = false;
@@ -91,6 +93,7 @@ public class RegisterUserController implements Controller {
 		//System.out.println(request.getParameter("cellNum"));
 		
 		// Does not need a try catch for integer conversion because they are numbers for sure
+		// needs to be changed because int is not big enough to hold the 10 digits
 		int cellNumber = Integer.parseInt(request.getParameter("cellNum"));
 		int emergencyNumber = Integer.parseInt(request.getParameter("emergencyNum"));
 
