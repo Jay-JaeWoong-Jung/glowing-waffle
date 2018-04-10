@@ -1,5 +1,7 @@
 package controller;
 
+// import java.io.PrintWriter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -23,28 +25,72 @@ public class RegisterUserController implements Controller {
 		// checking the database to see if this set of inputs is valid
 		boolean empty = false;
 		
+		// PrintWriter out = response.getWriter();
+		String displayError = "";
+		
 		if(username.equals("") || username.equals(null)) {
 			empty = true;
+			displayError += "username\n";
 		} else if(password.equals("") || password.equals(null)) {
 			empty = true;
+			displayError += "password\n";
 		} else if(firstName.equals("") || firstName.equals(null)) {
 			empty = true;
+			displayError += "first name\n";
 		} else if(lastName.equals("") || lastName.equals(null)) {
 			empty = true;
+			displayError += "last name\n";
 		} else if(cellNumString.equals("") || cellNumString.equals(null)) {
 			empty = true;
+			displayError += "cell phone number\n";
 		} else if(emergencyNumString.equals("") || emergencyNumString.equals(null)) {
 			empty = true;
+			displayError += "emergency phone number\n";
 		} else if(email.equals("") || email.equals(null)) {
 			empty = true;
+			displayError += "email\n";
 		}
 		
 		if(empty) {
+			// out.println(displayError);
+			
+			System.out.println(displayError);
+			
 			return new ModelAndView("userRegister.jsp?registerFail=true", true);
+		}
+		
+		// check to make sure both cell phone numbers are 10 digits
+		// else check to make sure all 10 character values are digits
+		if(cellNumString.length() != 10 || emergencyNumString.length() != 10) {
+			displayError += "cell phone numbers length are not 10\n";
+			// out.println(displayError);
+			
+			System.out.println(displayError);
+			
+			return new ModelAndView("userRegister.jsp?registerFail=true", true);
+		} else {
+			for(int i = 0; i < 10; i++) {
+				if(cellNumString.charAt(i) < 48 || cellNumString.charAt(i) > 57) {
+					displayError += "cell phone numbers contain non digits\n";
+					// out.println(displayError);
+					
+					System.out.println(displayError);
+					
+					return new ModelAndView("userRegister.jsp?registerFail=true", true);
+				} else if(emergencyNumString.charAt(i) < 48 || emergencyNumString.charAt(i) > 57) {
+					displayError += "emergency cell phone numbers contain non digits\n";
+					// out.println(displayError);
+					
+					System.out.println(displayError);
+					
+					return new ModelAndView("userRegister.jsp?registerFail=true", true);	
+				}
+			}
 		}
 		
 		//System.out.println(request.getParameter("cellNum"));
 		
+		// Does not need a try catch for integer conversion because they are numbers for sure
 		int cellNumber = Integer.parseInt(request.getParameter("cellNum"));
 		int emergencyNumber = Integer.parseInt(request.getParameter("emergencyNum"));
 
