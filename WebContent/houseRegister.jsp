@@ -28,7 +28,7 @@
         <h2 class="form-request-help-heading text-center">Roommate</h2>
         <label for="houseHandle" class="sr-only">What is your housing group called </label>
         <input type="text" name="houseHandle" class="form-control" placeholder="Ex. 37mainStreet" required autofocus>
-        <input type="hidden" name="command" value="creaetHouseHandle" >
+        <input type="hidden" name="command" value="createHouseHandle" >
         <button class="btn btn-lg btn-primary btn-block" type="submit">submit</button>
         
 	 </form>
@@ -38,7 +38,7 @@
 	        
         <label for="houseHandle" class="sr-only">Your housing URL </label>
         <input type="text" name="houseHandle" class="form-control" placeholder="123mainStreet" required autofocus>
-		<input type="hidden" name= "command" value="getHouseHandle">         
+		<input type="hidden" name= "command" value="joinHouseHandle">         
     		
 
         

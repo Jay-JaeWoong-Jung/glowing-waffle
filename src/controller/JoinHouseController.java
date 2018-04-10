@@ -10,7 +10,7 @@ import model.House;
 import model.User;
 import model.UserDAO;
 
-public class JoinHouserController implements Controller{
+public class JoinHouseController implements Controller{
 
 	@Override
 	public ModelAndView HandleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {

@@ -41,7 +41,6 @@ public class DispatcherServlet extends HttpServlet {
 		System.out.println("dispatcher command:"+cmd);
 		
 		Controller controller=HandlerMapping.getInstance().createController(cmd);
-		
 		try{
 			ModelAndView mv =controller.HandleRequest(request, response);
 			System.out.println("redirecting to view from dispatcher controller");
