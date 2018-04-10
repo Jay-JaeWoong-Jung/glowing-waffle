@@ -16,13 +16,11 @@ public class LoginController implements Controller {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		
-		PrintWriter out = response.getWriter();
-		
 		User user = UserDAO.getInstanceOf().login(username, password);
 		if (user != null) {
 			HttpSession session = request.getSession();
 			session.setAttribute("user", user);
-			return new ModelAndView("newMain.jsp", true);
+			return new ModelAndView("dashboard.jsp");
 		}
 		else {
 			return new ModelAndView("login.jsp?loginfail=true", true);

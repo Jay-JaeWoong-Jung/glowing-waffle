@@ -14,11 +14,11 @@ CREATE TABLE user (
   house_handle varchar(11),
   permanant_address varchar(50),
   venmo_handle varchar(11),
-  class_calendar_id int(50),
-  social_calendar_id int(50),
-  group_calendar_id int(50)
+  class_calendar_id varchar(50),
+  social_calendar_id varchar(50),
+  group_calendar_id varchar(50)
   
 );
 
 
-INSERT INTO user (username, password, first_name, last_name, cell_number, emerg_number, email, house_address, house_handle) VALUES ('aaa','aaa', 'Jay', 'Jung', '1234567890','0987654321','jaewoonj@usc.edu', '1241 W 37th PL, LA, CA, 90007, USA', 'main');
+INSERT INTO user (username, password, first_name, last_name, cell_number, emerg_number, email, house_address, house_handle) VALUES ('aaa','aaa', 'Jay', 'Jung', '1234567890','0987654321','jaewoonj@usc.edu', '1241 W 37th PL, LA, CA, 90007, USA', 'My House');
