@@ -11,8 +11,8 @@ import javax.websocket.server.ServerEndpoint;
 
 @ServerEndpoint(value = "/ws")
 public class Server{
-    private static HashMap<String, ServerThread> threadMap = new HashMap<>();
     private Vector<ServerThread> serverThreads;
+    private HashMap<String, Vector<ServerThread>> broadCastMap = new HashMap<>() ;
     public static void main(String[] args){
         Server server = new Server(6789);
 
@@ -41,8 +41,25 @@ public class Server{
                 groupEvent(command, thread);
             case TOGGLE_EVNET:
                 toggleEvent(command,thread);
+            case GROUP_IDENTIFIER:
+                addToGroup(command,thread);
         }
 
+    }
+
+    public void addToGroup(Command command, ServerThread thread){
+        String groupId = (String)command.getObj();
+        System.out.println("The group Id of the current user is " + groupId);
+        Vector<ServerThread> value = broadCastMap.get(groupId);
+        if (value != null) {
+            System.out.println("The id doesn't exist");
+            value.add(thread);
+        } else {
+            System.out.println("The id exists");
+            Vector<ServerThread> newVector = new Vector<ServerThread>();
+            newVector.add(thread);
+            broadCastMap.put(groupId, newVector);
+        }
     }
 
     public void toggleEvent(Command command, ServerThread thread){

@@ -17,6 +17,8 @@ public class HandlerMapping {
 			controller = new RegisterUserController();
 		} else if (command.equals("login")) {
 			controller = new LoginController();
+			Thread t = new Thread((LoginController)controller);
+			t.start();
 		} else if (command.equals("creaetHouseHandle")) {
 			controller = new RegisterHouseController();
 			Thread t = new Thread((RegisterHouseController)controller);

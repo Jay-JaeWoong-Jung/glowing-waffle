@@ -276,6 +276,36 @@ public class UserDAO {
         }
 		return true;
 	}
+
+	public void addCalendarId(String username, String socialCalendarId, String classCalendarId, String groupCalendarId){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = getConnection();
+			String updatedCalendar = Sql.UPDATE_CLASSCALENDAR;
+			pstmt = conn.prepareStatement(updatedCalendar);
+			pstmt.setString(1, classCalendarId);
+			pstmt.setString(2, username);
+			updatedCalendar = Sql.UPDATE_SOCIALCALENDAR;
+			pstmt = conn.prepareStatement(updatedCalendar);
+			pstmt.setString(1,socialCalendarId);
+			pstmt.setString(2, username);
+			updatedCalendar = Sql.UPDATE_GROUPCALENDAR;
+			pstmt = conn.prepareStatement(updatedCalendar);
+			pstmt.setString(1,groupCalendarId);
+			pstmt.setString(2,username);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(rs, pstmt, conn);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	public ArrayList<User> getUsers(String houseHandle) {
 		User user = null;
@@ -299,16 +329,12 @@ public class UserDAO {
 		}
 		return listOfUsers;
 	}
+
 	
 	//Test here DAO methods here
 	public static void main(String args[] ) {
 		UserDAO dao = UserDAO.getInstanceOf();
-		//ArrayList<User> jayBitch = dao.getUsers("My House");
 		boolean work = dao.joinHouseHandle("jschaider", "My House 2");
-//		for (User user : jayBitch) {
-//			System.out.println(user.getFirstName());
-//		}
-//		boolean work = dao.updateHouseHandle("aaa", "My House");
 		if (!work) {
 			System.out.println("false");
 		}

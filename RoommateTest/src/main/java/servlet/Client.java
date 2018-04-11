@@ -15,6 +15,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.*;
 import com.google.api.services.calendar.model.Calendar;
+import model.UserDAO;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -22,9 +23,13 @@ import org.java_websocket.server.WebSocketServer;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.*;
 
 public class Client extends WebSocketServer{
+
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
@@ -33,6 +38,9 @@ public class Client extends WebSocketServer{
     com.google.api.services.calendar.model.Calendar classCalendar;
     com.google.api.services.calendar.model.Calendar groupCalendar;
 
+    // Group Id
+    String groupId;
+
     // Three Calendar ID
     String socialCalendarId;
     String classCalendarId;
@@ -40,6 +48,9 @@ public class Client extends WebSocketServer{
 
     // Status Of Roommates
     String roommatesStatus;
+
+    // String of Username
+    String userName;
 
     // Store the service;
     com.google.api.services.calendar.Calendar service;
@@ -51,8 +62,6 @@ public class Client extends WebSocketServer{
         return summaryToId;
     }
 
-    // groupId of a person
-    String groupId;
     private static int TCP_PORT = 4444;
 
     private Set<WebSocket> conns;
@@ -127,18 +136,23 @@ public class Client extends WebSocketServer{
     public void onMessage(WebSocket conn, String message) {
         System.out.println("We are in on message method");
         String[] parts = message.split(",");
+
         for(String string:parts){
             System.out.println(string);
         }
+
         Command command;
+
+        // User want to change its status in room
         if(parts[0].equals("toggle")){
             System.out.println("The command is toggle event");
             command = new Command(CommandType.TOGGLE_EVNET, parts[1]);
             this.sendObject(command);
         }
+
+        // User want to add/delete an event
         else if(parts[0].equals("eventform")){
             System.out.println("The command is add new event");
-            //DateTime startingDateTime = new DateTime("2015-05-28T09:00:00-07:00");
             DateTime startingDateTime = new DateTime(parts[2]+":00-07:00");
             System.out.println("Creating a new starting time");
             DateTime endingDateTime = new DateTime(parts[3]+":00-07:00");
@@ -161,16 +175,38 @@ public class Client extends WebSocketServer{
                 }
             }
         }
+
+        // user want to choose an calendar
         else{
             System.out.println("User choose a calendar");
             if (parts[1].equals("class")) {
                 classCalendarId = summaryToId.get(parts[2]);
+                groupId = parts[3];
+                groupId = groupId.substring(0, groupId.length() - 1);
+                userName = parts[4];
+                userName = userName.substring(0, userName.length() - 1);
+                System.out.println("The user's group Id is " + groupId);
+                System.out.println("The user's name is " + userName);
+                command = new Command(CommandType.GROUP_IDENTIFIER, groupId);
+                this.sendObject(command);
             }
             else if(parts[1].equals("social")){
                 socialCalendarId = summaryToId.get(parts[2]);
+                userName = parts[4];
             }
             else{
-                addCalendar(parts[2]);
+                try {
+                    groupCalendarId = addCalendar(parts[2]);
+                    groupCalendarId = groupCalendarId.replaceAll("@", "%40");
+                    conn.send(groupCalendarId);
+
+                    // add the three calendars into the database
+                    UserDAO.getInstanceOf().addCalendarId(userName,socialCalendarId,classCalendarId,groupCalendarId);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                System.out.println("The id of group calendar is " + groupCalendarId);
             }
             System.out.println("Adding/Choosing the calendar");
         }
@@ -182,7 +218,6 @@ public class Client extends WebSocketServer{
         //ex.printStackTrace();
         if (conn != null) {
             conns.remove(conn);
-            // do some thing if required
         }
         System.out.println("ERROR from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
     }
@@ -286,40 +321,16 @@ public class Client extends WebSocketServer{
     }
 
 
-    // Choose the calendar you want to use as the personal/social calendar
-    public String chooseCalendar(Scanner scan, HashMap<String, String> summaryToId ){
-        while(true) {
-            System.out.println("Please choose the calendar you want to choose as social" +
-                    "class in the following: ");
-            int number = 1;
-            for(Map.Entry<String, String> entry: summaryToId.entrySet()){
-                System.out.println(number + ") " + entry.getKey());
-                number ++;
-            }
-            String keyWord = scan.next();
-            if(summaryToId.get(keyWord) != null){
-                return summaryToId.get(keyWord);
-            }
-            else
-            {
-                System.out.println("Your choice is invalid");
-            }
-        }
-    }
-
-
     // Create a new calendar and add it into the current calendar list
-    public void addCalendar(String summary)
+    public String addCalendar(String summary) throws Exception
     {
-        try {
-            com.google.api.services.calendar.model.Calendar calendar = new Calendar();
-            calendar.setSummary("calendarSummary");
-            calendar.setTimeZone("America/Los_Angeles");
-            Calendar createdCalendar = service.calendars().insert(calendar).execute();
-            System.out.println("I add a new calendar， which has a calendar id of " + createdCalendar);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        com.google.api.services.calendar.model.Calendar calendar = new Calendar();
+        calendar.setSummary(summary);
+        calendar.setTimeZone("America/Los_Angeles");
+        Calendar createdCalendar = service.calendars().insert(calendar).execute();
+        String calendarId = createdCalendar.getId();
+        return calendarId;
+
     }
 
     public void displayEvents(String calendarId){
@@ -453,6 +464,5 @@ public class Client extends WebSocketServer{
 
     public static void main(String[] args) throws IOException {
         Client player = new Client( "Username","localhost", 6789);
-        // servlet.Client player = new servlet.Client( "Username","2001:0:9d38:90d7:ec:2503:bb4a:31ee", 6789);
     }
 }
