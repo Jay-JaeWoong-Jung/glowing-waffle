@@ -305,14 +305,20 @@ public class UserDAO {
 	public static void main(String args[] ) {
 		UserDAO dao = UserDAO.getInstanceOf();
 		//ArrayList<User> jayBitch = dao.getUsers("My House");
-		boolean work = dao.joinHouseHandle("jschaider", "My House 2");
+		try {
+			boolean isUsernameAvailable = dao.isUsernameAvailable("aa");
+			System.out.println(isUsernameAvailable);
+		} catch (SQLException sql) {
+			sql.getMessage();
+		}
+		
 //		for (User user : jayBitch) {
 //			System.out.println(user.getFirstName());
 //		}
 //		boolean work = dao.updateHouseHandle("aaa", "My House");
-		if (!work) {
-			System.out.println("false");
-		}
+//		if (!work) {
+//			System.out.println("false");
+//		}
 
 	}
 }
