@@ -8,6 +8,7 @@ public class House {
 	
 	public House (String houseHandle) {
 		this.houseHandle = houseHandle;
+		roommates = new ArrayList<User>();
 	}
 	
 	public String getHouseHandle() {
