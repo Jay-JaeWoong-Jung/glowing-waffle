@@ -94,7 +94,6 @@ public class RegisterUserController implements Controller {
 		
 		// Does not need a try catch for integer conversion because they are numbers for sure
 		// needs to be changed because int is not big enough to hold the 10 digits
-//		long cellNumber = (long)Integer.parseInt(request.getParameter("cellNum"));
 		
 		long cellNumber = Long.parseLong(request.getParameter("cellNum"));
 		long emergencyNumber = Long.parseLong(request.getParameter("emergencyNum"));

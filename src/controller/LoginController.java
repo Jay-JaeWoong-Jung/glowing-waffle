@@ -20,7 +20,7 @@ public class LoginController implements Controller {
 		if (user != null) {
 			HttpSession session = request.getSession();
 			session.setAttribute("user", user);
-			return new ModelAndView("dashboard.jsp");
+			return new ModelAndView("dashboard.jsp", true);
 		}
 		else {
 			return new ModelAndView("login.jsp?loginfail=true", true);
