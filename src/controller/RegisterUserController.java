@@ -94,8 +94,10 @@ public class RegisterUserController implements Controller {
 		
 		// Does not need a try catch for integer conversion because they are numbers for sure
 		// needs to be changed because int is not big enough to hold the 10 digits
-		int cellNumber = Integer.parseInt(request.getParameter("cellNum"));
-		int emergencyNumber = Integer.parseInt(request.getParameter("emergencyNum"));
+//		long cellNumber = (long)Integer.parseInt(request.getParameter("cellNum"));
+		
+		long cellNumber = Long.parseLong(request.getParameter("cellNum"));
+		long emergencyNumber = Long.parseLong(request.getParameter("emergencyNum"));
 
 		boolean regResult = UserDAO.getInstanceOf().registerUser(username, password, firstName, lastName, cellNumber, emergencyNumber, email);
 		

@@ -94,7 +94,7 @@ public class UserDAO {
 	}
 	
 	public boolean registerUser(String username, String password, String firstName, String lastName, 
-			int cellNumber, int emergencyNumber, String email) {
+			long cellNumber, long emergencyNumber, String email) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;	
 		try {
@@ -113,8 +113,12 @@ public class UserDAO {
 			pstmt.setString(2, password);
 			pstmt.setString(3, firstName);
 			pstmt.setString(4, lastName);
-			pstmt.setInt(5, cellNumber);
-			pstmt.setInt(6, emergencyNumber);
+//			pstmt.setInt(5, cellNumber);
+//			pstmt.setInt(6, emergencyNumber);
+			
+			pstmt.setLong(5, cellNumber);
+			pstmt.setLong(6, emergencyNumber);
+			
 			pstmt.setString(7, email);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -305,14 +309,20 @@ public class UserDAO {
 	public static void main(String args[] ) {
 		UserDAO dao = UserDAO.getInstanceOf();
 		//ArrayList<User> jayBitch = dao.getUsers("My House");
-		boolean work = dao.joinHouseHandle("jschaider", "My House 2");
+		try {
+			boolean isUsernameAvailable = dao.isUsernameAvailable("aa");
+			System.out.println(isUsernameAvailable);
+		} catch (SQLException sql) {
+			sql.getMessage();
+		}
+		
 //		for (User user : jayBitch) {
 //			System.out.println(user.getFirstName());
 //		}
 //		boolean work = dao.updateHouseHandle("aaa", "My House");
-		if (!work) {
-			System.out.println("false");
-		}
+//		if (!work) {
+//			System.out.println("false");
+//		}
 
 	}
 }

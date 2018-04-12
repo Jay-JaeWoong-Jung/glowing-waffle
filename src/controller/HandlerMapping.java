@@ -20,7 +20,7 @@ public class HandlerMapping {
 		} else if (command.equals("createHouseHandle")) {
 			controller = new RegisterHouseController();
 		} else if (command.equals("joinHouseHandle")) {
-//			controller = new JoinHouseController();
+			controller = new JoinHouseController();
 		}
 		
 		System.out.println("inside handler "+controller+"controller created");

@@ -5,8 +5,8 @@ public class User {
 	private String password;
 	private String firstName;
 	private String lastname;
-	private int cellNumber;
-	private int emergencyNumber;
+	private long cellNumber;
+	private long emergencyNumber;
 	private String email;
 	private String address;
 	private String houseHandle;
@@ -18,7 +18,7 @@ public class User {
 	private String checkedInStatus;
 	
 	//Constructor using fields required at sign up
-	public User (String username, String password, String firstName, String lastName, int cellNumber, int emergencyNumber, String email) {
+	public User (String username, String password, String firstName, String lastName, long cellNumber, long emergencyNumber, String email) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -81,13 +81,13 @@ public class User {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public int getCellNumber() {
+	public long getCellNumber() {
 		return cellNumber;
 	}
 	public void setCellNumber(int cellNum) {
 		this.cellNumber = cellNum;
 	}
-	public int getEmergencyNumber() {
+	public long getEmergencyNumber() {
 		return emergencyNumber;
 	}
 	public void setEmergencyNumber(int emergencyNum) {
