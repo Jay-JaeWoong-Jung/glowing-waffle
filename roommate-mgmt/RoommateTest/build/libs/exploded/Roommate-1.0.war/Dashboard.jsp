@@ -3,6 +3,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="servlet.Client" %>
 <%@ page import="model.House" %>
+<%@ page import="model.User" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -71,6 +72,7 @@
                 var calendar = document.getElementsByName("calendarId");
                 var calendarButton;
                 var groupId = document.getElementById("houseId").value;
+                var userName = document.getElementById("userId").value;
                 console.log(groupId);
                 for (var i = 0, length = calendar.length; i < length; i++) {
                     console.log("Inside of the check button");
@@ -81,7 +83,7 @@
                     }
                 }
 
-                socket.send("calendar ," + formname + "," + calendarButton + "," + groupId );
+                socket.send("calendar ," + formname + "," + calendarButton + "," + groupId + "," + userName);
             }
             else{
                 console.log("groupCalendar");
@@ -91,9 +93,13 @@
         }
     </script>
     <%
+        User user = (User)session.getAttribute(("user"));
         ArrayList<String> theListOfMap = (ArrayList<String>) session.getAttribute("calendarList");
         House houseHandle = (House)session.getAttribute("house");
-        String houseId = houseHandle.getHouseHandle();
+        String houseId = "empty";
+        if(houseHandle != null) {
+            houseId = houseHandle.getHouseHandle();
+        }
     %>
 </head>
 <body onload="connectToServer()">
@@ -108,6 +114,7 @@
         <br/>
         <%
         }%>
+        <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
         <input type = "hidden" id = "houseId" name = "houseId" value = <%=houseId%>/>
         <input type="submit" name="submit" value="choose calendar" />
     </form>
@@ -125,6 +132,7 @@
         <%
             }%>
         <%=houseId%>
+        <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
         <input type = "hidden" id = "houseId" name = "houseId" value = <%=houseId%>/>
         <input type="submit" name="submit" value="choose calendar" />
     </form>
@@ -134,6 +142,7 @@
     Now you would add a group calendar, <br/>
     How would you name your group calendar? <br/>
     <form name = "groupForm" onsubmit = "return sendMessage('group')">
+        <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
         <input type = "text" id = "summary" name = "calendarSummary" >
         <input type="submit" name="submit" value="choose calendar" />
     </form>

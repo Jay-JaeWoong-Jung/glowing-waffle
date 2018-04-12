@@ -15,6 +15,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.*;
 import com.google.api.services.calendar.model.Calendar;
+import model.UserDAO;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -22,9 +23,13 @@ import org.java_websocket.server.WebSocketServer;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.*;
 
 public class Client extends WebSocketServer{
+
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
@@ -43,6 +48,9 @@ public class Client extends WebSocketServer{
 
     // Status Of Roommates
     String roommatesStatus;
+
+    // String of Username
+    String userName;
 
     // Store the service;
     com.google.api.services.calendar.Calendar service;
@@ -174,18 +182,27 @@ public class Client extends WebSocketServer{
             if (parts[1].equals("class")) {
                 classCalendarId = summaryToId.get(parts[2]);
                 groupId = parts[3];
+                groupId = groupId.substring(0, groupId.length() - 1);
+                userName = parts[4];
+                userName = userName.substring(0, userName.length() - 1);
                 System.out.println("The user's group Id is " + groupId);
+                System.out.println("The user's name is " + userName);
                 command = new Command(CommandType.GROUP_IDENTIFIER, groupId);
                 this.sendObject(command);
             }
             else if(parts[1].equals("social")){
                 socialCalendarId = summaryToId.get(parts[2]);
+                userName = parts[4];
             }
             else{
                 try {
                     groupCalendarId = addCalendar(parts[2]);
                     groupCalendarId = groupCalendarId.replaceAll("@", "%40");
+
                     conn.send(groupCalendarId);
+
+                    // add the three calendars into the database
+                    UserDAO.getInstanceOf().addGroupCalendar(userName,groupCalendarId);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

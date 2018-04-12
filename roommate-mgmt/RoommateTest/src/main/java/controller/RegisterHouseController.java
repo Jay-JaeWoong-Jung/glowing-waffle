@@ -27,13 +27,12 @@ public class RegisterHouseController implements Controller,Runnable {
 				System.out.println(entry.getKey());
 				calendarList.add(entry.getKey());
 			}
-			Client client = new Client("uername", "localhost", 6789);
+			Client client = new Client("username", "localhost", 6789);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-
 	}
+
 	@Override
 	public ModelAndView HandleRequest(HttpServletRequest request, HttpServletResponse response){
 		HttpSession session = request.getSession();

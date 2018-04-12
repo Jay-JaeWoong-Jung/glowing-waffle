@@ -116,6 +116,7 @@ public class UserDAO {
 			pstmt.setInt(6, emergencyNumber);
 			pstmt.setString(7, email);
 			pstmt.executeUpdate();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
         } finally {
@@ -128,8 +129,77 @@ public class UserDAO {
         }
 		return true;
 	}
-	
-	
+
+	public String getClassCalendar(String username) throws SQLException{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String calendarId = null;
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(Sql.GET_CLASSCALENDAR);
+			pstmt.setString(1, username);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				calendarId = rs.getString(1);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeAll(rs, pstmt, conn);
+		}
+		return calendarId;
+	}
+
+	public String getSocialCalendar(String username) throws SQLException{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String calendarId = null;
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(Sql.GET_SOCIALCALENDAR);
+			pstmt.setString(1, username);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				calendarId = rs.getString(1);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeAll(rs, pstmt, conn);
+		}
+		return calendarId;
+	}
+
+
+	public String getGroupCalendar(String username) throws SQLException{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String calendarId = null;
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(Sql.GET_GROUPCALEDNAR);
+			pstmt.setString(1, username);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				calendarId = rs.getString(1);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeAll(rs, pstmt, conn);
+		}
+		return calendarId;
+	}
+
 	public boolean isUsernameAvailable(String username) throws SQLException {
 		boolean result = false;
 		Connection conn = null;
@@ -214,6 +284,7 @@ public class UserDAO {
 			pstmt.setString(1, username);
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
+				System.out.println(rs.getString(1));
 				user = new User(username, rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getString(7));
 			}
 			closeAll(rs, pstmt, conn);
@@ -249,6 +320,7 @@ public class UserDAO {
         }
 		return true;
 	}
+
 	
 	public boolean createHouseHandle(String username, String houseHandle) {
 		Connection conn = null;
@@ -276,6 +348,72 @@ public class UserDAO {
         }
 		return true;
 	}
+
+	public void addClassCalendar(String username, String classCalendarId){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = getConnection();
+			String updatedCalendar = Sql.UPDATE_CLASSCALENDAR;
+			pstmt = conn.prepareStatement(updatedCalendar);
+			pstmt.setString(1, classCalendarId);
+			pstmt.setString(2, username);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(rs, pstmt, conn);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void addSocialCalendar(String username, String socialCalendarId){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = getConnection();
+			String updatedCalendar = Sql.UPDATE_SOCIALCALENDAR;
+			pstmt = conn.prepareStatement(updatedCalendar);
+			pstmt.setString(1, socialCalendarId);
+			pstmt.setString(2, username);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(rs, pstmt, conn);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void addGroupCalendar(String username, String groupCalendarId){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = getConnection();
+			String updatedCalendar = Sql.UPDATE_GROUPCALENDAR;
+			pstmt = conn.prepareStatement(updatedCalendar);
+			pstmt.setString(1, groupCalendarId);
+			pstmt.setString(2, username);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(rs, pstmt, conn);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	public ArrayList<User> getUsers(String houseHandle) {
 		User user = null;
@@ -299,19 +437,29 @@ public class UserDAO {
 		}
 		return listOfUsers;
 	}
+
 	
 	//Test here DAO methods here
 	public static void main(String args[] ) {
 		UserDAO dao = UserDAO.getInstanceOf();
-		//ArrayList<User> jayBitch = dao.getUsers("My House");
-		boolean work = dao.joinHouseHandle("jschaider", "My House 2");
-//		for (User user : jayBitch) {
-//			System.out.println(user.getFirstName());
-//		}
-//		boolean work = dao.updateHouseHandle("aaa", "My House");
-		if (!work) {
-			System.out.println("false");
+		dao.addClassCalendar("345","ttt");
+		dao.addGroupCalendar("345","thisgroupcalendar");
+		dao.addSocialCalendar("345", "thissocialcalendar");
+
+		String classCalendar = null;
+		String socialCalendar = null;
+		String groupCalendar = null;
+		try {
+			classCalendar = dao.getClassCalendar("345");
+			socialCalendar = dao.getSocialCalendar("345");
+			groupCalendar = dao.getGroupCalendar("345");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+		System.out.println("I get the class calendar Id as " + classCalendar);
+		System.out.println("I get the social calendar Id as " + socialCalendar);
+		System.out.println("I get the group calendar Id as " + groupCalendar);
 
 	}
 }
