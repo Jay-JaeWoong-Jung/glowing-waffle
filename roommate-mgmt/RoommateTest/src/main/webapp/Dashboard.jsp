@@ -36,7 +36,7 @@
                 console.log(startingTime);
                 console.log(endingTime);
                 // get the calendarId
-                var radios = document.getElementsByName("calendarId");
+                var radios = document.getElementsByName("calendarClass");
                 var radiobutton;
                 for (var i = 0, length = radios.length; i < length; i++) {
                     console.log("Inside of the check button");
@@ -157,13 +157,13 @@
     Summary: <input type="text" name="message" value = "Title"/><br />
     Starting Time:  <input id="startingTime" type="datetime-local" name="partydate" value="2017-06-01T08:30">
     Ending Time: <input id="endingTime" type="datetime-local" name="partydate" value="2017-06-01T08:30">
-    <input type = "radio" name = "calendarId" value = "Class Calendar">
+    <input type = "radio" name = "calendarClass" value = "Class Calendar">
     Class Calendar
     <br/>
-    <input type = "radio" name = "calendarId" value = "Social Calendar">
+    <input type = "radio" name = "calendarClass" value = "Social Calendar">
     Social Calendar
     <br/>
-    <input type = "radio" name = "calendarId" value = "Group Calendar">
+    <input type = "radio" name = "calendarClass" value = "Group Calendar">
     Group Calendar
     <br/>
     <input type="submit" name="submit" value="Send Message" />
