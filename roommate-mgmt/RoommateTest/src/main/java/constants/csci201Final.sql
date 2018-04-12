@@ -7,16 +7,16 @@ CREATE TABLE user (
   password varchar(50) not null,
   first_name varchar(50) not null,
   last_name varchar(50) not null,
-  cell_number int(11) not null,
-  emerg_number int(11) not null,
+  cell_number bigint(11) not null,
+  emerg_number bigint(11) not null,
   email varchar(50) not null,
   house_address varchar(50),
   house_handle varchar(11),
   permanant_address varchar(50),
   venmo_handle varchar(11),
-  class_calendar_id int(50),
-  social_calendar_id int(50),
-  group_calendar_id int(50)
+  class_calendar_id varchar(200),
+  social_calendar_id varchar(200),
+  group_calendar_id varchar(200)
   
 );
 

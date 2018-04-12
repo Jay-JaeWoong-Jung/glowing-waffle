@@ -163,7 +163,9 @@ public class Client extends WebSocketServer{
             if(calendar.equals("Group Calendar")){
                 System.out.println("People are adding the event into group calendar");
                 command = new Command(CommandType.GROUP_EVENT, event);
-                this.sendObject(command);
+                eventToCalendar(groupCalendarId,event);
+                conn.send(groupCalendarId);
+               // this.sendObject(command);
             }
             else{
                 if(calendar.equals("Class Calendar")){
@@ -179,6 +181,7 @@ public class Client extends WebSocketServer{
         // user want to choose an calendar
         else{
             System.out.println("User choose a calendar");
+            System.out.println("and his/her choice is " + parts[1]);
             if (parts[1].equals("class")) {
                 classCalendarId = summaryToId.get(parts[2]);
                 groupId = parts[3];
@@ -189,19 +192,20 @@ public class Client extends WebSocketServer{
                 System.out.println("The user's name is " + userName);
                 command = new Command(CommandType.GROUP_IDENTIFIER, groupId);
                 this.sendObject(command);
+                UserDAO.getInstanceOf().addClassCalendar(userName,classCalendarId);
+                System.out.println("The id of class calendar is " + classCalendarId);
             }
             else if(parts[1].equals("social")){
                 socialCalendarId = summaryToId.get(parts[2]);
                 userName = parts[4];
+                UserDAO.getInstanceOf().addSocialCalendar(userName,socialCalendarId);
+                System.out.println("The id of social calendar is " + socialCalendarId);
             }
             else{
                 try {
                     groupCalendarId = addCalendar(parts[2]);
                     groupCalendarId = groupCalendarId.replaceAll("@", "%40");
-
                     conn.send(groupCalendarId);
-
-                    // add the three calendars into the database
                     UserDAO.getInstanceOf().addGroupCalendar(userName,groupCalendarId);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -267,6 +271,8 @@ public class Client extends WebSocketServer{
     public void eventToCalendar(String calendarId, Event event)
     {
         try{
+            calendarId = calendarId.replaceAll("%40","@");
+            System.out.println("In adding event to calendar function " + calendarId);
             this.service.events().insert(calendarId, event).execute();
             System.out.printf("Event created! ");
 
