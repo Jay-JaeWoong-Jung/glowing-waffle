@@ -201,7 +201,7 @@ public class Client extends WebSocketServer{
                     conn.send(groupCalendarId);
 
                     // add the three calendars into the database
-                    UserDAO.getInstanceOf().addCalendarId(userName,socialCalendarId,classCalendarId,groupCalendarId);
+                    //UserDAO.getInstanceOf().addCalendarId(userName,socialCalendarId,classCalendarId,groupCalendarId);
 
                 } catch (Exception e) {
                     e.printStackTrace();
