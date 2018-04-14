@@ -16,8 +16,8 @@ public class RegisterUserController implements Controller {
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
 		//System.out.println(request.getParameter("cellNum"));
-		int cellNumber = Integer.parseInt(request.getParameter("cellNum"));
-		int emergencyNumber = Integer.parseInt(request.getParameter("emergencyNum"));
+		long cellNumber = Long.parseLong(request.getParameter("cellNum"));
+		long emergencyNumber = Long.parseLong(request.getParameter("emergencyNum"));
 		String email = request.getParameter("email");
 		
 		boolean regResult = UserDAO.getInstanceOf().registerUser(username, password, firstName, lastName, cellNumber, emergencyNumber, email);

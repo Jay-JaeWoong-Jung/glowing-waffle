@@ -17,14 +17,16 @@ public class HandlerMapping {
 			controller = new RegisterUserController();
 		} else if (command.equals("login")) {
 			controller = new LoginController();
-			Thread t = new Thread((LoginController)controller);
-			t.start();
+			//Thread t = new Thread((LoginController)controller);
+			//t.start();
 		} else if (command.equals("creaetHouseHandle")) {
 			controller = new RegisterHouseController();
-			Thread t = new Thread((RegisterHouseController)controller);
-			t.start();
-		} else if (command.equals("joinHouse")) {
+			//Thread t = new Thread((RegisterHouseController)controller);
+			//t.start();
+		} else if (command.equals("joinHouseHandle")) {
 			controller = new JoinHouserController();
+			//Thread t = new Thread((JoinHouserController)controller);
+			//t.start();
 		}
 		
 		System.out.println("inside handler "+controller+"controller created");

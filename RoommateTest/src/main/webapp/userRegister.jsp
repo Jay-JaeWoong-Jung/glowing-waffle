@@ -37,7 +37,7 @@
     	    <input type="text" name="username" class="form-control" placeholder="Enter a username" required autofocus>
         
         <label for="password" class="sr-only">type your full name </label>
-        <input type="text" name="password" class="form-control" placeholder="Enter your password" required autofocus>
+        <input type="password" name="password" class="form-control" placeholder="Enter your password" required autofocus>
         
         <label for="cellNum" class="sr-only">type your full name </label>
         <input type="text" name="cellNum" class="form-control" placeholder="Enter your phone number" required autofocus>

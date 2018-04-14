@@ -18,6 +18,7 @@ import java.util.Map;
 public class RegisterHouseController implements Controller,Runnable {
 	Boolean completed = false;
 	ArrayList<String> calendarList;
+	String userIdentifier = null;
 	public void run(){
 		try {
 			CalendarGet calendarGet = new CalendarGet();
@@ -27,8 +28,9 @@ public class RegisterHouseController implements Controller,Runnable {
 				System.out.println(entry.getKey());
 				calendarList.add(entry.getKey());
 			}
-			Client client = new Client("username", "localhost", 6789);
-		} catch (IOException e) {
+			Thread.sleep(2000);
+			Client client = new Client(userIdentifier, "localhost", 6789);
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -38,6 +40,7 @@ public class RegisterHouseController implements Controller,Runnable {
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("user");
 		String username = user.getUsername();
+		userIdentifier = username;
 		String houseHandle = request.getParameter("houseHandle");
 		String url = "houseRegister.jsp";
 		
@@ -53,8 +56,6 @@ public class RegisterHouseController implements Controller,Runnable {
 				}
 			}
 			session.setAttribute("calendarList", calendarList);
-			// TODO SESSION.SETATTRIBUTE(GROUPCALENDARID)
-			// TODO IF THE GROUP CALENDAR ID IS NULL THEN LEAVE IT
 			session.setAttribute("house", house);
 			url = "Dashboard.jsp";
 		}
