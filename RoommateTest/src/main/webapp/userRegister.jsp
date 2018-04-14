@@ -19,7 +19,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Hompage</title>
+  <title>Register</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <!-- Bulma Version 0.6.2-->
@@ -57,16 +57,18 @@
     <div class="hero-body">
       <div class="container has-text-centered">
         
-          <div class="column is-5 is-offset-3">
+          
+           
+      	
+<form class="form-request-help" method="POST" action="DispatcherServlet">
+		<div class="column is-5 is-offset-3">
+		<h6 class="form-request-help-heading text-center"><font size="20">Roommates</font></h6>
             <figure class="image is-4by3">
               <img src="https://picsum.photos/800/600/?random" alt="Description">
             </figure>
           </div>
           <div class="column is-5 is-offset-3">
-           
-      	
-<form class="form-request-help" method="POST" action="DispatcherServlet">
-        <h2 class="form-request-help-heading text-center">Roommate</h2>
+        
         <label for="firstname" class="sr-only">type your full name </label>
         <input type="text" name="firstName" class="form-control" placeholder="Enter your first name" required autofocus>
         

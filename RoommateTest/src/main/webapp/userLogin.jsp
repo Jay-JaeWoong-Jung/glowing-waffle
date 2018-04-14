@@ -57,15 +57,18 @@
     <div class="hero-body">
       <div class="container has-text-centered">
         
-          <div class="column is-5 is-offset-3">
+          
+           
+      <form class="form-request-help" method="POST" action="DispatcherServlet">
+        
+        
+        <div class="column is-5 is-offset-3">
+        <h6 class="form-request-help-heading text-center"><font size="20">Roommates</font></h6>
             <figure class="image is-4by3">
               <img src="https://picsum.photos/800/600/?random" alt="Description">
             </figure>
           </div>
           <div class="column is-5 is-offset-3">
-           
-      <form class="form-request-help" method="POST" action="DispatcherServlet">
-        <h2 class="form-request-help-heading text-center">Roommates</h2>
 
 		<label for="username" class="sr-only">type your full name </label>
     	    <input type="text" name="username" class="form-control" placeholder="Enter a username" required autofocus>
