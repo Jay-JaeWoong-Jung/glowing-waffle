@@ -123,6 +123,7 @@
         }
 
         ArrayList<User> allCurrentUsers = UserDAO.getInstanceOf().getUsers(houseId);
+        String groupCalendarId = (String) session.getAttribute("groupCalendarId");
     %>
 </head>
 <body onload="connectToServer()">
@@ -161,7 +162,10 @@
     </form>
 </div>
 
+
 <div class = "choose">
+    <% if(groupCalendarId == null){
+        %>
     Now you would add a group calendar, <br/>
     How would you name your group calendar? <br/>
     <form name = "groupForm" onsubmit = "return sendMessage('group')">
@@ -169,6 +173,21 @@
         <input type = "text" id = "summary" name = "calendarSummary" >
         <input type="submit" name="submit" value="choose calendar" />
     </form>
+    <%
+        }
+    %>
+</div>
+
+<div class = "exist" >
+<%if(groupCalendarId != null){
+    String constantbefore = "<iframe src=\"https://calendar.google.com/calendar/embed?src=";
+    String constantafter = "&ctz=America%2FLos_Angeles\" style=\"border: 0\" width=\"800\" height=\"600\" frameborder=\"0\" scrolling=\"no\"><\/iframe>";
+    String overall = constantbefore + groupCalendarId + constantafter;
+%>
+    <%=overall%>
+    <%
+        }
+    %>
 </div>
 
 <div id ="showCalendar" class="responsive-iframe-container big-container">

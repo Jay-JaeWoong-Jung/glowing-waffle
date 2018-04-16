@@ -57,9 +57,9 @@ public class LoginController implements Controller,Runnable {
 			String classcalendarId = UserDAO.getInstanceOf().getClassCalendar(username);
 			String socialcalendarId = UserDAO.getInstanceOf().getSocialCalendar(username);
 			String groupcalendarId = UserDAO.getInstanceOf().getGroupCalendar(username);
-			session.setAttribute("classcalendarId", classcalendarId);
-			session.setAttribute("socialcalendarId", socialcalendarId);
-			session.setAttribute("groupcalendarId",groupcalendarId);
+			//session.setAttribute("classcalendarId", classcalendarId);
+			//session.setAttribute("socialcalendarId", socialcalendarId);
+			//session.setAttribute("groupcalendarId",groupcalendarId);
             if(!completed){
                 try {
                     Thread.sleep(1000);
