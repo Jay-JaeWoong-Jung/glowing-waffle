@@ -4,6 +4,7 @@
 <%@ page import="servlet.Client" %>
 <%@ page import="model.House" %>
 <%@ page import="model.User" %>
+<%@ page import="model.UserDAO" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,18 +13,30 @@
     <script>
         var socket;
         function connectToServer() {
+            var calendarId;
+            var event;
             socket = new WebSocket('ws://127.0.0.1:4444');
             socket.onopen = function(event) {
                 document.getElementById("myevent").innerHTML += "Connected!";
             }
             socket.onmessage = function(event) {
-                var variable = event.data;
+                if(!calendarId) {
+                    calendarId = event.data;
+                }
+                var content = event.data;
+                content = content.split(",");
+                var first= content.shift();
+                if(first === "toggle"){
+                    console.log(first);
+                    document.getElementById("myevent").innerHTML = content;
+                }
                 var constantbefore = "<iframe src=\"https://calendar.google.com/calendar/embed?src=";
                 var constantafter = "&ctz=America%2FLos_Angeles\" style=\"border: 0\" width=\"800\" height=\"600\" frameborder=\"0\" scrolling=\"no\"><\/iframe>";
-                console.log(variable);
-                document.getElementById("showCalendar").innerHTML = constantbefore + variable + constantafter;
-                //document.getElementById("myevent").innerHTML += event.data + "<br />";
+
+                console.log(calendarId);
+                document.getElementById("showCalendar").innerHTML = constantbefore + calendarId + constantafter;
             }
+
             socket.onclose = function(event) {
                 document.getElementById("myevent").innerHTML += "Disconnected!";
             }
@@ -50,13 +63,15 @@
                 socket.send("eventform," + document.eventform.message.value + "," + startingTime +
                 "," + endingTime + "," + radiobutton);
             }
+
             else if(formname === "toggle")
             {
                 console.log("toggle");
                 // get the calendarId
                 var status = document.getElementsByName("radios");
                 var statusbutton;
-                for (var i = 0, length = status.length; i < length; i++) {
+                var userName = document.getElementById("userId").value;
+                for (var i = 0;  i < status.length; i++) {
                     console.log("Inside of the check button");
                     if (status[i].checked) {
                         statusbutton = (status[i].value);
@@ -65,8 +80,9 @@
                     }
                 }
 
-                socket.send("toggle ," + statusbutton);
+                socket.send("status," + userName + "," + statusbutton);
             }
+
             else if(formname === "class" || formname === "social"){
                 console.log("calendar");
                 var calendar = document.getElementsByName("calendarId");
@@ -86,8 +102,9 @@
                 socket.send("calendar ," + formname + "," + calendarButton + "," + groupId + "," + userName);
             }
             else{
+                var userName = document.getElementById("userId").value;
                 console.log("groupCalendar");
-                socket.send("calendar ," + formname + "," + document.getElementById("summary").value);
+                socket.send("calendar ," + formname + "," + document.getElementById("summary").value + "," + userName);
             }
             return false;
         }
@@ -96,10 +113,17 @@
         User user = (User)session.getAttribute(("user"));
         ArrayList<String> theListOfMap = (ArrayList<String>) session.getAttribute("calendarList");
         House houseHandle = (House)session.getAttribute("house");
+        String tempHouseId = (String)session.getAttribute("houseid");
         String houseId = "empty";
+        if(tempHouseId != null){
+            houseId = tempHouseId;
+        }
         if(houseHandle != null) {
             houseId = houseHandle.getHouseHandle();
         }
+
+        ArrayList<User> allCurrentUsers = UserDAO.getInstanceOf().getUsers(houseId);
+        String groupCalendarId = (String) session.getAttribute("groupCalendarId");
     %>
 </head>
 <body onload="connectToServer()">
@@ -138,7 +162,10 @@
     </form>
 </div>
 
+
 <div class = "choose">
+    <% if(groupCalendarId == null){
+        %>
     Now you would add a group calendar, <br/>
     How would you name your group calendar? <br/>
     <form name = "groupForm" onsubmit = "return sendMessage('group')">
@@ -146,6 +173,21 @@
         <input type = "text" id = "summary" name = "calendarSummary" >
         <input type="submit" name="submit" value="choose calendar" />
     </form>
+    <%
+        }
+    %>
+</div>
+
+<div class = "exist" >
+<%if(groupCalendarId != null){
+    String constantbefore = "<iframe src=\"https://calendar.google.com/calendar/embed?src=";
+    String constantafter = "&ctz=America%2FLos_Angeles\" style=\"border: 0\" width=\"800\" height=\"600\" frameborder=\"0\" scrolling=\"no\"><\/iframe>";
+    String overall = constantbefore + groupCalendarId + constantafter;
+%>
+    <%=overall%>
+    <%
+        }
+    %>
 </div>
 
 <div id ="showCalendar" class="responsive-iframe-container big-container">
@@ -170,8 +212,22 @@
 </form>
 
 <br />
-<div id="myevent"></div>
 
+<div id="myevent">
+You are currently in the household: <%=houseId%> <br/>
+Now their status is <br/>
+<%
+    for(int i = 0; i<allCurrentUsers.size(); i++){
+        String currentUser = allCurrentUsers.get(i).getUsername();
+        String currentStatus = allCurrentUsers.get(i).getCheckedInStatus();
+%>
+        <%=currentUser%> : <%=currentStatus%>   <br/>
+<%
+    }
+%>
+</div>
+
+You can change your status here:
 <form name = "toggle" onsubmit = "return sendMessage('toggle');">
     <input type = "radio" name = "radios" value = "inroom">
     In Room
@@ -181,6 +237,7 @@
     <br/>
     <input type = "radio" name = "radios" value = "donotdisturb"> Do not disturb
     <br/>
+    <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
     <input type="submit" name="submit" value="Updated Status" />
 </form>
 

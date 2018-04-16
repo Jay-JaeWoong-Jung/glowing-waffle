@@ -18,6 +18,7 @@ import servlet.Client;
 public class LoginController implements Controller,Runnable {
     Boolean completed = false;
     ArrayList<String> calendarList;
+    String userIdentifier = null;
     public void run(){
         try {
             CalendarGet calendarGet = new CalendarGet();
@@ -27,29 +28,38 @@ public class LoginController implements Controller,Runnable {
                 calendarList.add(entry.getKey());
                 System.out.println(entry.getKey());
             }
-            Client client = new Client("username", "localhost", 6789);
-        } catch (IOException e) {
+            Thread.sleep(2000);
+            Client client = new Client(userIdentifier, "localhost", 6789);
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
 	@Override
 	public ModelAndView HandleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        CalendarGet calendarGet = new CalendarGet();
+        calendarList = new ArrayList<String>();
+        HashMap<String,String> calendarId = calendarGet.getSummaryToId();
+        for(Map.Entry<String, String> entry: calendarId.entrySet()){
+            calendarList.add(entry.getKey());
+            System.out.println(entry.getKey());
+        }
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		
+		userIdentifier = username;
 		PrintWriter out = response.getWriter();
 		
 		User user = UserDAO.getInstanceOf().login(username, password);
+		String houseId = UserDAO.getInstanceOf().getHouseHandle(username);;
 		if (user != null) {
 			HttpSession session = request.getSession();
 			session.setAttribute("user", user);
 			String classcalendarId = UserDAO.getInstanceOf().getClassCalendar(username);
 			String socialcalendarId = UserDAO.getInstanceOf().getSocialCalendar(username);
 			String groupcalendarId = UserDAO.getInstanceOf().getGroupCalendar(username);
-			session.setAttribute("classcalendarId", classcalendarId);
-			session.setAttribute("socialcalendarId", socialcalendarId);
-			session.setAttribute("groupcalendarId",groupcalendarId);
+			//session.setAttribute("classcalendarId", classcalendarId);
+			//session.setAttribute("socialcalendarId", socialcalendarId);
+			//session.setAttribute("groupcalendarId",groupcalendarId);
             if(!completed){
                 try {
                     Thread.sleep(1000);
@@ -58,6 +68,7 @@ public class LoginController implements Controller,Runnable {
                 }
             }
             session.setAttribute("calendarList", calendarList);
+            session.setAttribute("houseid", houseId);
 			//if(user.getGroupCalendarId() == null)session.setAttribute("show", false);
 			return new ModelAndView("Dashboard.jsp", true);
 		}

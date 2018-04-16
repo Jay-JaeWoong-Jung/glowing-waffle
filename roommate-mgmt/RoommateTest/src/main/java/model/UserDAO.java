@@ -83,7 +83,8 @@ public class UserDAO {
 			pstmt.setString(2, password);
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
-				user = new User(username, password, rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4), rs.getString(5));
+				user = new User(username, password, rs.getString(1), rs.getString(2), rs.getLong(3), rs.getLong(4), rs.getString(5));
+
 			}
 			closeAll(rs, pstmt, conn);
 		}catch (SQLException e) {
@@ -91,9 +92,9 @@ public class UserDAO {
 		}
 		return user;
 	}
-	
+
 	public boolean registerUser(String username, String password, String firstName, String lastName, 
-			int cellNumber, int emergencyNumber, String email) {
+			long cellNumber, long emergencyNumber, String email) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;	
 		try {
@@ -112,9 +113,10 @@ public class UserDAO {
 			pstmt.setString(2, password);
 			pstmt.setString(3, firstName);
 			pstmt.setString(4, lastName);
-			pstmt.setInt(5, cellNumber);
-			pstmt.setInt(6, emergencyNumber);
+			pstmt.setLong(5, cellNumber);
+			pstmt.setLong(6, emergencyNumber);
 			pstmt.setString(7, email);
+			pstmt.setString(8, "inroom");
 			pstmt.executeUpdate();
 
 		} catch (SQLException e) {
@@ -151,6 +153,29 @@ public class UserDAO {
 			closeAll(rs, pstmt, conn);
 		}
 		return calendarId;
+	}
+
+	public String getHouseHandle(String username) throws SQLException{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String houseId = null;
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(Sql.GET_HOUSEHANDLE);
+			pstmt.setString(1, username);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				houseId = rs.getString(1);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeAll(rs, pstmt, conn);
+		}
+		return houseId;
 	}
 
 	public String getSocialCalendar(String username) throws SQLException{
@@ -285,7 +310,7 @@ public class UserDAO {
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
 				System.out.println(rs.getString(1));
-				user = new User(username, rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getString(7));
+				user = new User(username, rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getString(6), rs.getString(7) ,rs.getString(8));
 			}
 			closeAll(rs, pstmt, conn);
 		}catch (SQLException e) {
@@ -428,7 +453,7 @@ public class UserDAO {
 			pstmt.setString(1, houseHandle);
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
-				user = new User(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getInt(6), rs.getString(7), rs.getString(8));
+				user = new User(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getLong(5), rs.getLong(6), rs.getString(7), rs.getString(8), rs.getString(9));
 				listOfUsers.add(user);
 			}
 			closeAll(rs, pstmt, conn);
@@ -438,21 +463,42 @@ public class UserDAO {
 		return listOfUsers;
 	}
 
+	public void updateStatus(String username, String status){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = getConnection();
+			String updatedCalendar = Sql.UPDATE_STATUS;
+			pstmt = conn.prepareStatement(updatedCalendar);
+			pstmt.setString(1, status);
+			pstmt.setString(2, username);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(rs, pstmt, conn);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	//Test here DAO methods here
 	public static void main(String args[] ) {
 		UserDAO dao = UserDAO.getInstanceOf();
-		dao.addClassCalendar("345","ttt");
-		dao.addGroupCalendar("345","thisgroupcalendar");
-		dao.addSocialCalendar("345", "thissocialcalendar");
+		dao.addClassCalendar("aaa","ttt");
+		dao.addGroupCalendar("aaa","???");
+		dao.addSocialCalendar("aaa", "whatthefuck?");
 
 		String classCalendar = null;
 		String socialCalendar = null;
 		String groupCalendar = null;
 		try {
-			classCalendar = dao.getClassCalendar("345");
-			socialCalendar = dao.getSocialCalendar("345");
-			groupCalendar = dao.getGroupCalendar("345");
+			classCalendar = dao.getClassCalendar("aaa");
+			socialCalendar = dao.getSocialCalendar("aaa");
+			groupCalendar = dao.getGroupCalendar("aaa");
 
 		} catch (SQLException e) {
 			e.printStackTrace();

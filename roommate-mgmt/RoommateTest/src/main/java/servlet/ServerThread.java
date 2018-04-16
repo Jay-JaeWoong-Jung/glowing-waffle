@@ -9,7 +9,6 @@ public class ServerThread extends Thread{
     private Server server;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
-    private String groupId;
 
     public ServerThread(Socket s, Server server) {
         try {

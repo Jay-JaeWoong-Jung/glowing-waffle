@@ -1,6 +1,9 @@
 package servlet;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -12,7 +15,9 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/ws")
 public class Server{
     private Vector<ServerThread> serverThreads;
+    private HashMap<Integer, String> userNameMap = new HashMap<>();
     private HashMap<String, Vector<ServerThread>> broadCastMap = new HashMap<>() ;
+
     public static void main(String[] args){
         Server server = new Server(6789);
 
@@ -28,7 +33,8 @@ public class Server{
                 Socket s = ss.accept(); // blocking
                 System.out.println("Connection from: " + s.getInetAddress());
                 ServerThread st = new ServerThread(s, this);
-                serverThreads.add(st); //TODO ADD THE THREAD INTO THE SERVERTHREAD
+                System.out.println("The new server thread is " + st.getId());
+                serverThreads.add(st);
             }
         } catch (IOException ioe) {
             System.out.println("ioe in ChatRoom constructor: " + ioe.getMessage());
@@ -38,56 +44,70 @@ public class Server{
     public void processCommand(Command command, ServerThread thread){
         switch (command.getCommandType()){
             case GROUP_EVENT:
+                System.out.println("The server received a command called group event");
                 groupEvent(command, thread);
-            case TOGGLE_EVNET:
+            case TOGGLE_EVENT:
                 toggleEvent(command,thread);
-            case GROUP_IDENTIFIER:
-                addToGroup(command,thread);
+           // case USERNAME_TO_SERVER:
+             //   addToGroup(command, thread);
         }
 
     }
 
+    /*
     public void addToGroup(Command command, ServerThread thread){
-        String groupId = (String)command.getObj();
-        System.out.println("The group Id of the current user is " + groupId);
-        Vector<ServerThread> value = broadCastMap.get(groupId);
-        if (value != null) {
-            System.out.println("The id doesn't exist");
-            value.add(thread);
-        } else {
-            System.out.println("The id exists");
-            Vector<ServerThread> newVector = new Vector<ServerThread>();
-            newVector.add(thread);
-            broadCastMap.put(groupId, newVector);
-        }
+        System.out.println("Now we are inserting userName");
+        userNameMap.put(thread,(String)command.getObj());
     }
+    */
 
     public void toggleEvent(Command command, ServerThread thread){
         //broadcast(command, thread);
     }
 
     public void groupEvent(Command command, ServerThread thread){
-        // TODO
+        System.out.println("This command comes from " + thread.getId());
+        System.out.println("We have in total " + serverThreads.size());
+        if(thread.equals(serverThreads.elementAt(0))){
+            System.out.println("It is the 1st element");
+        } else if(thread.equals(serverThreads.elementAt(1))){
+            System.out.println("It is the 2nd element");
+        }
+
         System.out.println("Received a group event");
-        //Event to be broadcasted ;
-        //broadcast(command,thread);
+        ArrayList<String> eventDetail = (ArrayList<String>)command.getObj();
+        String userName = (String)command.getObj2();
+        System.out.println("The current user is " + userName);
+        if(eventDetail.get(0).equals("first"))
+        {
+            userNameMap.put(serverThreads.indexOf(thread),(String)command.getObj2());
+        }
+        else{
+            command = new Command(CommandType.GROUP_EVENT, eventDetail);
+            broadcast(thread, command);
+        }
+
     }
 
     // broadcast function
-    /*
-    public void broadcast(servlet.Command command, servlet.ServerThread thread) {
-        //if (message != null) {
-        if (command != null) {
-            //System.out.println(message);
+    public void broadcast(ServerThread thread, Command command) {
+        System.out.println("There is currently " + serverThreads.size());
+        System.out.println("The name of currentThread is " + serverThreads.indexOf(thread));
 
-            for(servlet.ServerThread threads : serverThreads) {
-                if (thread != threads) {
-                    //threads.sendMessage(message);
-                    threads.sendObject(command);
+
+        if (command != null) {
+            for(ServerThread allGroupThread : serverThreads) {
+                System.out.println("There are " + serverThreads.size() + " inside of this group threads ");
+                if(allGroupThread.isAlive() && allGroupThread != thread){
+                    ArrayList<String> eventDetail = (ArrayList<String>)command.getObj();
+                    String userName = userNameMap.get(allGroupThread);
+                    System.out.println("I am sending to the thread identifier known as " + thread.getName());
+                    command = new Command(CommandType.GROUP_EVENT, eventDetail);
+                    allGroupThread.sendObject(command);
                 }
             }
         }
-    }
-    */
 
+
+    }
 }

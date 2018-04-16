@@ -5,20 +5,20 @@ public class User {
 	private String password;
 	private String firstName;
 	private String lastname;
-	private int cellNumber;
-	private int emergencyNumber;
+	private long cellNumber;
+	private long emergencyNumber;
 	private String email;
 	private String address;
 	private String houseHandle;
 	private String permanentAddress;
 	private String venmoHandle;
-	private int classCalendarId;
-	private int socialCalendarId;
-	private int groupCalendarId;
+	private String classCalendarId;
+	private String socialCalendarId;
+	private String groupCalendarId;
 	private String checkedInStatus;
 	
 	//Constructor using fields required at sign up
-	public User (String username, String password, String firstName, String lastName, int cellNumber, int emergencyNumber, String email) {
+	public User (String username, String password, String firstName, String lastName, long cellNumber, long emergencyNumber, String email) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -27,6 +27,7 @@ public class User {
 		this.cellNumber = cellNumber;
 		this.emergencyNumber = emergencyNumber;
 		this.email = email;
+		this.checkedInStatus = "inroom";
 	}
 
 	//constructor using required fields (taking data from Login)
@@ -37,7 +38,8 @@ public class User {
 	}
 	
 	//constructor used when creating user that already exists
-	public User (String username, String password, String firstName, String lastName, int cellNumber, int emergencyNumber, String email, String houseHandle) {
+	public User (String username, String password, String firstName, String lastName, long cellNumber, long emergencyNumber, String email, String houseHandle, String checkedInStatus)
+	{
 		super();
 		this.username = username;
 		this.password = password;
@@ -47,6 +49,7 @@ public class User {
 		this.emergencyNumber = emergencyNumber;
 		this.email = email;
 		this.houseHandle = houseHandle;
+		this.checkedInStatus = checkedInStatus;
 	}
 
 
@@ -81,18 +84,19 @@ public class User {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public int getCellNumber() {
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public long getCellNumber() {
 		return cellNumber;
 	}
-	public void setCellNumber(int cellNum) {
-		this.cellNumber = cellNum;
-	}
-	public int getEmergencyNumber() {
+
+	public long getEmergencyNumber() {
 		return emergencyNumber;
 	}
-	public void setEmergencyNumber(int emergencyNum) {
-		this.emergencyNumber = emergencyNum;
-	}
+
 	public String getEmail() {
 		return email;
 	}
@@ -111,27 +115,23 @@ public class User {
 	public void setCheckedInStatus(String checkedInStatus) {
 		this.checkedInStatus = checkedInStatus;
 	}
-	public int getSocialCalendarId() {
-		return socialCalendarId;
-	}
-	public void setSocialCalendarId(int scid) {
-		this.socialCalendarId = scid;
-	}
-	public int getClassCalendarId() {
-		return classCalendarId;
-	}
-	public void setClassCalendarId(int ccid) {
-		this.classCalendarId = ccid;
-	}
-	public int getGroupCalendarId() {
-		return groupCalendarId;
-	}
-	public void setGroupCalendarId(int gcid) {
-		this.groupCalendarId = gcid;
-	}
+
 	public String getHouseHandle() {
 		return houseHandle;
 	}
+
+	public String getClassCalendarId() {
+		return classCalendarId;
+	}
+
+	public String getSocialCalendarId() {
+		return socialCalendarId;
+	}
+
+	public String getGroupCalendarId() {
+		return groupCalendarId;
+	}
+
 	public void setHouseHandle(String houseHandle) {
 		this.houseHandle = houseHandle;
 	}

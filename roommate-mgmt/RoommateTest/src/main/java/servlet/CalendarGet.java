@@ -51,12 +51,6 @@ public class CalendarGet{
         return summaryToId;
     }
 
-    // groupId of a person
-    String groupId;
-    private static int TCP_PORT = 4444;
-
-    private Set<WebSocket> conns;
-
 
     // servlet.Client Constructor
     public CalendarGet() throws IOException {
@@ -170,5 +164,13 @@ public class CalendarGet{
                 HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
+    }
+
+    public static void main(String[] args) {
+        try {
+            CalendarGet calendarGet = new CalendarGet();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
