@@ -25,21 +25,20 @@
  <div class="container">
 
       <form class="form-request-help" method="POST" action="DispatcherServlet">
-        <h1 class="form-request-help-heading text-center">Roommates</h2>
-        <h4 class="form-request-help-heading text-left">Create a House Handle:</h2>
+        <h2 class="form-request-help-heading text-center">Roommate</h2>
         <label for="houseHandle" class="sr-only">What is your housing group called </label>
-        <input type="text" name="houseHandle" class="form-control" placeholder="123mainStreet" required autofocus>
-        <input type="hidden" name="command" value="createHouseHandle" >
+        <input type="text" name="houseHandle" class="form-control" placeholder="Ex. 37mainStreet" required autofocus>
+        <input type="hidden" name="command" value="creaetHouseHandle" >
         <button class="btn btn-lg btn-primary btn-block" type="submit">submit</button>
         
 	 </form>
 	 
 	 
 	  <form class="form-request-help" method="POST" action="DispatcherServlet">
-	    <h4 class="form-request-help-heading text-left">Join a House Handle: </h2>
+	        
         <label for="houseHandle" class="sr-only">Your housing URL </label>
         <input type="text" name="houseHandle" class="form-control" placeholder="123mainStreet" required autofocus>
-		<input type="hidden" name= "command" value="joinHouseHandle">         
+		<input type="hidden" name= "command" value="joinHouseHandle">
     		
 
         
