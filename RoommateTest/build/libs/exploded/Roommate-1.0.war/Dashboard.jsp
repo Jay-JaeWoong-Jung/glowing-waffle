@@ -12,15 +12,19 @@
     <title>Chat servlet.Client</title>
     <script>
         var socket;
+        var calendarId;
+
         function connectToServer() {
-            var calendarId;
-            var event;
             socket = new WebSocket('ws://127.0.0.1:4444');
             socket.onopen = function(event) {
                 document.getElementById("myevent").innerHTML += "Connected!";
             }
             socket.onmessage = function(event) {
-                if(!calendarId) {
+                var div = document.getElementById("calendarforlogin");
+                div.style.display = 'none';
+                console.log("Received a message");
+                console.log("Current calendar id is " + calendarId);
+                if(calendarId == null) {
                     calendarId = event.data;
                 }
                 var content = event.data;
@@ -46,6 +50,13 @@
                 console.log("eventform");
                 var startingTime = document.getElementById("startingTime").value;
                 var endingTime = document.getElementById("endingTime").value;
+                var checkExist = document.getElementById("groupCalendarIdCheck").value;
+                console.log(checkExist);
+                if( checkExist != null){
+                    console.log("The group calendar hasn't saved in javascript");
+                    calendarId = checkExist;
+                }
+
                 console.log(startingTime);
                 console.log(endingTime);
                 // get the calendarId
@@ -60,7 +71,7 @@
                     }
                 }
 
-                socket.send("eventform," + document.eventform.message.value + "," + startingTime +
+                socket.send("eventform," + checkExist + "," + document.eventform.message.value + "," + startingTime +
                 "," + endingTime + "," + radiobutton);
             }
 
@@ -79,7 +90,11 @@
                         break;
                     }
                 }
-
+                var calendarExist = document.getElementById("existed").value;
+                console.log(calendarExist);
+                if( calendarExist != null){
+                    calendarId = calendarExist;
+                }
                 socket.send("status," + userName + "," + statusbutton);
             }
 
@@ -123,7 +138,9 @@
         }
 
         ArrayList<User> allCurrentUsers = UserDAO.getInstanceOf().getUsers(houseId);
-        String groupCalendarId = (String) session.getAttribute("groupCalendarId");
+        String groupCalendarId = (String) session.getAttribute("groupcalendarId");
+        session.invalidate();
+        System.out.println("The user's group id is " + groupCalendarId);
     %>
 </head>
 <body onload="connectToServer()">
@@ -164,7 +181,7 @@
 
 
 <div class = "choose">
-    <% if(groupCalendarId == null){
+    <% if(null == groupCalendarId){
         %>
     Now you would add a group calendar, <br/>
     How would you name your group calendar? <br/>
@@ -178,10 +195,10 @@
     %>
 </div>
 
-<div class = "exist" >
+<div class = "exist" id = "calendarforlogin">
 <%if(groupCalendarId != null){
     String constantbefore = "<iframe src=\"https://calendar.google.com/calendar/embed?src=";
-    String constantafter = "&ctz=America%2FLos_Angeles\" style=\"border: 0\" width=\"800\" height=\"600\" frameborder=\"0\" scrolling=\"no\"><\/iframe>";
+    String constantafter = "&ctz=America%2FLos_Angeles\" style=\"border: 0\" width=\"800\" height=\"600\" frameborder=\"0\" scrolling=\"no\"></iframe>";
     String overall = constantbefore + groupCalendarId + constantafter;
 %>
     <%=overall%>
@@ -208,6 +225,7 @@
     <input type = "radio" name = "calendarClass" value = "Group Calendar">
     Group Calendar
     <br/>
+    <input type = "hidden" id = "groupCalendarIdCheck" value = <%=groupCalendarId%>>
     <input type="submit" name="submit" value="Send Message" />
 </form>
 
@@ -238,6 +256,7 @@ You can change your status here:
     <input type = "radio" name = "radios" value = "donotdisturb"> Do not disturb
     <br/>
     <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
+    <input type = "hidden" id = "existed" value = <%=groupCalendarId%>>
     <input type="submit" name="submit" value="Updated Status" />
 </form>
 

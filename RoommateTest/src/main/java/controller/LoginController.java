@@ -54,12 +54,16 @@ public class LoginController implements Controller,Runnable {
 		if (user != null) {
 			HttpSession session = request.getSession();
 			session.setAttribute("user", user);
+            System.out.println("Current user has the username " + username);
 			String classcalendarId = UserDAO.getInstanceOf().getClassCalendar(username);
 			String socialcalendarId = UserDAO.getInstanceOf().getSocialCalendar(username);
 			String groupcalendarId = UserDAO.getInstanceOf().getGroupCalendar(username);
-			//session.setAttribute("classcalendarId", classcalendarId);
-			//session.setAttribute("socialcalendarId", socialcalendarId);
-			//session.setAttribute("groupcalendarId",groupcalendarId);
+           // System.out.println("In Login Controller group calendar id is " + groupcalendarId);
+
+			session.setAttribute("classcalendarId", classcalendarId);
+			session.setAttribute("socialcalendarId", socialcalendarId);
+			session.setAttribute("groupcalendarId",groupcalendarId);
+            session.setAttribute("calendarList", calendarList);
             if(!completed){
                 try {
                     Thread.sleep(1000);
@@ -67,13 +71,12 @@ public class LoginController implements Controller,Runnable {
                     e.printStackTrace();
                 }
             }
-            session.setAttribute("calendarList", calendarList);
             session.setAttribute("houseid", houseId);
 			//if(user.getGroupCalendarId() == null)session.setAttribute("show", false);
 			return new ModelAndView("Dashboard.jsp", true);
 		}
 		else {
-			return new ModelAndView("login.jsp?loginfail=true", true);
+			return new ModelAndView("userLogin.jsp?loginfail=true", true);
 		}
 		
 	}

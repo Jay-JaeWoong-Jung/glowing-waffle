@@ -67,6 +67,9 @@ public class Client extends WebSocketServer{
     // Current WebSocket
     WebSocket currentWebsocket;
 
+    // GroupCalendarStorage
+    HashMap<String, Set<String>> groupCalendarCollector;
+
     private static int TCP_PORT = 4444;
 
     private Set<WebSocket> conns;
@@ -82,63 +85,6 @@ public class Client extends WebSocketServer{
         service = getCalendarService();
         this.userNameOfCurrentUser = username;
 
-        // Create the connection between client and server
-        System.out.println("Trying to connect to " + port + ":" + port);
-        //Socket s = new Socket(ipAddress, port);
-       // oos = new ObjectOutputStream(s.getOutputStream());
-        //ois = new ObjectInputStream(s.getInputStream());
-
-        //TODO NEED TO CHECK WHETHER THIS IS A NEW LOGIN CLIENT OR THE CLIENT WHO HAS ALREADY SIGNED IN
-
-
-        // Retrieve a specific calendar list entry
-        summaryToId = new HashMap<>();
-        String pageToken = null;
-        do {
-            CalendarList calendarList = service.calendarList().list().setPageToken(pageToken).execute();
-            List<CalendarListEntry> items = calendarList.getItems();
-
-
-            for (CalendarListEntry calendarListEntry : items) {
-                String id = calendarListEntry.getId();
-                String summary = calendarListEntry.getSummary();
-                summaryToId.put(summary, id);
-            }
-            pageToken = calendarList.getNextPageToken();
-        } while (pageToken != null);
-
-        //listen();
-    }
-
-    private void listen(){
-        while(true) {
-            try {
-                System.out.println("Inside of the client function the user name is " + userNameOfCurrentUser);
-                System.out.println("Inside of the client function the group calendar id is " + groupCalendarIdOfCurrentUser);
-                Command returnItem = (Command) ois.readObject();
-                if (returnItem.getCommandType().equals(CommandType.GROUP_EVENT)) {
-                    System.out.println("We are now adding a new event according to the server");
-                    ArrayList<String> eventDetail = (ArrayList<String>)returnItem.getObj();
-                    String summary = eventDetail.get(0);
-                    DateTime startingDateTime = new DateTime(eventDetail.get(1));
-                    DateTime endingDateTime = new DateTime(eventDetail.get(2));
-                    Event newEvent = addEvent(summary,startingDateTime,endingDateTime);
-                    System.out.println(returnItem.getObj());
-                    System.out.println("In listen function the userName is " + userNameOfCurrentUser);
-                    try {
-                        String groupCalendarId = UserDAO.getInstanceOf().getGroupCalendar(userNameOfCurrentUser);
-                        System.out.println("In listen function the group Calendar id is " + groupCalendarId);
-                        eventToCalendar(groupCalendarId, newEvent);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    // TODO STATUS TOGGLE SHOULD I HAVE A LIST OF GROUP MEMBER STATUS?
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 
@@ -163,15 +109,14 @@ public class Client extends WebSocketServer{
             System.out.println(string);
         }
 
-        Command command;
-
         if(parts[0].equals("okay")){
             System.out.println("Now we are updating the event to another calendar");
             conn.send(groupCalendarIdOfCurrentUser);
             return;
         }
-        System.out.println("The part 0 word is " + parts[0]);
+
         String change = parts[0];
+
         // User want to change its status in room
         if(change.equals("status")){
             System.out.println("The command is toggle event");
@@ -200,19 +145,21 @@ public class Client extends WebSocketServer{
 
         // User want to add/delete an event
         else if(parts[0].equals("eventform")){
-            DateTime startingDateTime = new DateTime(parts[2]+":00-07:00");
-            DateTime endingDateTime = new DateTime(parts[3]+":00-07:00");
-            String summary = parts[1];
+            DateTime startingDateTime = new DateTime(parts[3]+":00-07:00");
+            DateTime endingDateTime = new DateTime(parts[4]+":00-07:00");
+            String summary = parts[2];
             Event event = addEvent(summary,startingDateTime, endingDateTime);
-            String calendar = parts[4];
+            String calendar = parts[5];
             System.out.println(calendar);
             if(calendar.equals("Group Calendar")){
-                eventToCalendar(groupCalendarIdOfCurrentUser,event);
+                groupCalendarIdOfCurrentUser = parts[1];
+                System.out.println("We are now adding a group event ");
+                System.out.println("The group calendar is " + groupCalendarIdOfCurrentUser);
                 conn.send(groupCalendarIdOfCurrentUser);
                 ArrayList<String> eventDetail = new ArrayList<>();
-                eventDetail.add(parts[1]);
-                eventDetail.add(parts[2] + ":00-07:00");
+                eventDetail.add(parts[2]);
                 eventDetail.add(parts[3] + ":00-07:00");
+                eventDetail.add(parts[4] + ":00-07:00");
                 System.out.println("The size of conns is" + conns.size());
                 eventToAllCalendar(event);
                 for(WebSocket webSocket: conns){
@@ -280,19 +227,7 @@ public class Client extends WebSocketServer{
         System.out.println("ERROR from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
     }
 
-    /*
-    public void updatedStatus(String status){
-        //TODO WRITE TO DATABSE & OR / UPDATED HERE?
-        roommatesStatus = status;
-        sendToggle(roommatesStatus);
-    }
 
-    // Toggle
-    public void sendToggle(String status){
-        Command command = new Command(CommandType.TOGGLE_EVENT, status);
-        this.sendObject(command);
-    }
-*/
 
     // Check String
     public String displayPrimary(String string){
