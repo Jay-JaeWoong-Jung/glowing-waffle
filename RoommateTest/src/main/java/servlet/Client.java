@@ -67,8 +67,10 @@ public class Client extends WebSocketServer{
     // Current WebSocket
     WebSocket currentWebsocket;
 
-    // GroupCalendarStorage
-    HashMap<String, Set<String>> groupCalendarCollector;
+    // Group Websocket storage
+    // Group Calendar storage
+    HashMap<String, Set<WebSocket>> webSocketController = new HashMap<>();
+    HashMap<String, Set<String>> groupCalendarController = new HashMap<>();
 
     private static int TCP_PORT = 4444;
 
@@ -117,13 +119,30 @@ public class Client extends WebSocketServer{
 
         String change = parts[0];
 
-        // User want to change its status in room
+        // User want to change its status in room（Fully Success)
         if(change.equals("status")){
             System.out.println("The command is toggle event");
             String userName = parts[1];
             String toggleStatus = parts[2];
             String sendBackMessage = "toggle,";
             userName = userName.replace(userName.substring(userName.length()-1), "");
+            String houseId = parts[3];
+            houseId = houseId.substring(0, houseId.length() - 1);
+
+            // check for websocket set
+            Set<WebSocket> value = webSocketController.get(houseId);
+            if(value!=null){
+                System.out.println("");
+                if(!value.contains(conn)){
+                    value.add(conn);
+                }
+            } else{
+                System.out.println("The current house id doesn't exists");
+                Set<WebSocket> webSocketCollection = new HashSet<>();
+                webSocketCollection.add(conn);
+                webSocketController.put(houseId,webSocketCollection);
+            }
+
             System.out.println("The user " + userName + " change the toggle status to " + toggleStatus);
             UserDAO.getInstanceOf().updateStatus(userName,toggleStatus);
             try {
@@ -134,8 +153,10 @@ public class Client extends WebSocketServer{
                     sendBackMessage += user.getUsername() + ": " + user.getCheckedInStatus() + "<br/>";
                 }
                 System.out.println(sendBackMessage);
-                for(WebSocket webSocket: conns){
-                    webSocket.send(sendBackMessage);
+
+                Set<WebSocket> toThisHouse = webSocketController.get(houseId);
+                for(WebSocket websocket: toThisHouse){
+                    websocket.send(sendBackMessage);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -151,8 +172,28 @@ public class Client extends WebSocketServer{
             Event event = addEvent(summary,startingDateTime, endingDateTime);
             String calendar = parts[5];
             System.out.println(calendar);
+            String houseHandle = parts[6];
+            houseHandle = houseHandle.substring(0, houseHandle.length() - 1);
+            groupCalendarIdOfCurrentUser = parts[1];
+            System.out.println("Current group id is " + houseHandle);
             if(calendar.equals("Group Calendar")){
-                groupCalendarIdOfCurrentUser = parts[1];
+                // get the group calendar of the current socket
+                //groupCalendarIdOfCurrentUser = parts[1];
+
+                // check whether the group id exist; if not then add the group calendar controller;
+                Set<String> value = groupCalendarController.get(houseHandle);
+                if(value!=null){
+                    System.out.println("The current house id exists");
+                    if(!value.contains(groupCalendarIdOfCurrentUser)){
+                        value.add(groupCalendarIdOfCurrentUser);
+                    }
+                } else{
+                    System.out.println("The current house id doesn't exists");
+                    Set<String> idCollection = new HashSet<>();
+                    idCollection.add(groupCalendarIdOfCurrentUser);
+                    groupCalendarController.put(houseHandle,idCollection);
+                }
+
                 System.out.println("We are now adding a group event ");
                 System.out.println("The group calendar is " + groupCalendarIdOfCurrentUser);
                 conn.send(groupCalendarIdOfCurrentUser);
@@ -160,22 +201,28 @@ public class Client extends WebSocketServer{
                 eventDetail.add(parts[2]);
                 eventDetail.add(parts[3] + ":00-07:00");
                 eventDetail.add(parts[4] + ":00-07:00");
+
                 System.out.println("The size of conns is" + conns.size());
-                eventToAllCalendar(event);
-                for(WebSocket webSocket: conns){
-                    if(webSocket != conn) {
-                        webSocket.send(parts[1]);
+
+                ArrayList<String> broadCastTarget = UserDAO.getInstanceOf().getGroupCalendars(houseHandle);
+                for(String getAllCalendar:broadCastTarget){
+                    if(getAllCalendar != null){
+                        System.out.println("In boradCastTarget the calendar is " + getAllCalendar);
+                        eventToCalendar(getAllCalendar,event);
                     }
                 }
+
+                Set<WebSocket> toThisHouse = webSocketController.get(houseHandle);
+                for(WebSocket websocket: toThisHouse){
+                    websocket.send(parts[1]);
+                }
+
                 return;
             }
             else{
-                if(calendar.equals("Class Calendar")){
-                    eventToCalendar(classCalendarIdOfCurrentUser,event);
-                }else{
-                    eventToCalendar(socialCalendarIdOfCurrentUser,event);
+                    eventToCalendar(groupCalendarIdOfCurrentUser,event);
+                    conn.send(parts[1]);
                 }
-            }
         }
 
         // user want to choose an calendar
@@ -282,31 +329,6 @@ public class Client extends WebSocketServer{
         }
     }
 
-    public void eventToAllCalendar(Event event){
-        String pageToken = null;
-        do {
-            CalendarList calendarList = null;
-            try {
-                calendarList = service.calendarList().list().setPageToken(pageToken).execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            List<CalendarListEntry> items = calendarList.getItems();
-
-
-            for (CalendarListEntry calendarListEntry : items) {
-                String id = calendarListEntry.getId();
-                String summary = calendarListEntry.getSummary();
-                summaryToId.put(summary, id);
-            }
-            pageToken = calendarList.getNextPageToken();
-        } while (pageToken != null);
-
-        for (String value : summaryToId.values()) {
-            eventToCalendar(value, event);
-        }
-    }
-
     // Create a new calendar and add it into the current calendar list
     public String addCalendar(String summary) throws Exception
     {
@@ -319,41 +341,6 @@ public class Client extends WebSocketServer{
 
     }
 
-    public void displayEvents(String calendarId){
-        try{
-            // Retrieve the user account
-            com.google.api.services.calendar.model.Calendar alreadyExistedCalendar =
-                    service.calendars().get(calendarId).execute();
-
-            System.out.println(alreadyExistedCalendar.getSummary());
-
-            /* List the next 10 events from the primary calendar. */
-            DateTime now = new DateTime(System.currentTimeMillis());
-            Events events = null;
-            events = service.events().list(calendarId)
-                    .setMaxResults(10)
-                    .setTimeMin(now)
-                    .setOrderBy("startTime")
-                    .setSingleEvents(true)
-                    .execute();
-
-            List<Event> items = events.getItems();
-            if (items.size() == 0) {
-                System.out.println("No upcoming events found.");
-            } else {
-                System.out.println("Upcoming events");
-                for (Event event : items) {
-                    DateTime start = event.getStart().getDateTime();
-                    if (start == null) {
-                        start = event.getStart().getDate();
-                    }
-                    System.out.printf("%s (%s)\n", event.getSummary(), start);
-                } }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 
 
     //NOTE ALL THE BELOW ARE FROM CALENDAR API FOR CREDENTIAL DON'T CHANGE THE CODE
@@ -434,18 +421,6 @@ public class Client extends WebSocketServer{
                 .build();
     }
 
-    public void sendObject(Command command) {
-        try {
-            if(oos == null)
-            {
-                System.out.println("oos is null");
-            }
-            oos.writeObject(command);
-            oos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static void main(String[] args) throws IOException {
         Client player = new Client( "Username","localhost", 6789);

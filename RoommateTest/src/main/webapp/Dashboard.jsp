@@ -1,7 +1,4 @@
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.util.Map" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="servlet.Client" %>
 <%@ page import="model.House" %>
 <%@ page import="model.User" %>
 <%@ page import="model.UserDAO" %>
@@ -20,10 +17,10 @@
                 document.getElementById("myevent").innerHTML += "Connected!";
             }
             socket.onmessage = function(event) {
-                var div = document.getElementById("calendarforlogin");
-                div.style.display = 'none';
                 console.log("Received a message");
                 console.log("Current calendar id is " + calendarId);
+                var div = document.getElementById("calendarforlogin");
+                div.style.display = 'none';
                 if(calendarId == null) {
                     calendarId = event.data;
                 }
@@ -47,18 +44,13 @@
         }
         function sendMessage(formname) {
             if(formname === "eventform"){
-                console.log("eventform");
                 var startingTime = document.getElementById("startingTime").value;
                 var endingTime = document.getElementById("endingTime").value;
                 var checkExist = document.getElementById("groupCalendarIdCheck").value;
-                console.log(checkExist);
                 if( checkExist != null){
-                    console.log("The group calendar hasn't saved in javascript");
                     calendarId = checkExist;
                 }
 
-                console.log(startingTime);
-                console.log(endingTime);
                 // get the calendarId
                 var radios = document.getElementsByName("calendarClass");
                 var radiobutton;
@@ -71,8 +63,11 @@
                     }
                 }
 
+                // get houseid
+                var groupId = document.getElementById("houseId").value;
+
                 socket.send("eventform," + checkExist + "," + document.eventform.message.value + "," + startingTime +
-                "," + endingTime + "," + radiobutton);
+                "," + endingTime + "," + radiobutton + "," + groupId);
             }
 
             else if(formname === "toggle")
@@ -95,7 +90,10 @@
                 if( calendarExist != null){
                     calendarId = calendarExist;
                 }
-                socket.send("status," + userName + "," + statusbutton);
+                // get houseid
+                var groupId = document.getElementById("houseId").value;
+
+                socket.send("status," + userName + "," + statusbutton + "," + groupId);
             }
 
             else if(formname === "class" || formname === "social"){
@@ -145,40 +143,6 @@
 </head>
 <body onload="connectToServer()">
 
-<div class = "choose">
-    Choose your class calendar:
-    <form name = "classForm" onsubmit = "return sendMessage('class')">
-        <% for(int i = 0; i<theListOfMap.size(); i++){
-            %>
-        <input type = "radio" name = "calendarId" value = <%=theListOfMap.get(i)%>>
-        <%=theListOfMap.get(i)%>
-        <br/>
-        <%
-        }%>
-        <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
-        <input type = "hidden" id = "houseId" name = "houseId" value = <%=houseId%>/>
-        <input type="submit" name="submit" value="choose calendar" />
-    </form>
-</div>
-
-
-<div class = "choose">
-    Choose your social calendar:
-    <form name = "socialForm" onsubmit = "return sendMessage('social')">
-        <% for(int i = 0; i<theListOfMap.size(); i++){
-        %>
-        <input type = "radio" name = "calendarId" value = <%=theListOfMap.get(i)%>>
-        <%=theListOfMap.get(i)%>
-        <br/>
-        <%
-            }%>
-        <%=houseId%>
-        <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
-        <input type = "hidden" id = "houseId" name = "houseId" value = <%=houseId%>/>
-        <input type="submit" name="submit" value="choose calendar" />
-    </form>
-</div>
-
 
 <div class = "choose">
     <% if(null == groupCalendarId){
@@ -225,6 +189,7 @@
     <input type = "radio" name = "calendarClass" value = "Group Calendar">
     Group Calendar
     <br/>
+    <input type = "hidden" id = "houseId" name = "houseId" value = <%=houseId%>/>
     <input type = "hidden" id = "groupCalendarIdCheck" value = <%=groupCalendarId%>>
     <input type="submit" name="submit" value="Send Message" />
 </form>
@@ -255,6 +220,7 @@ You can change your status here:
     <br/>
     <input type = "radio" name = "radios" value = "donotdisturb"> Do not disturb
     <br/>
+    <input type = "hidden" id = "houseId" name = "houseId" value = <%=houseId%>/>
     <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
     <input type = "hidden" id = "existed" value = <%=groupCalendarId%>>
     <input type="submit" name="submit" value="Updated Status" />

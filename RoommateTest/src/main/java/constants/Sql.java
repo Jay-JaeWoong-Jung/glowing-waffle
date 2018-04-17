@@ -17,4 +17,5 @@ public interface Sql {
 	public static final String GET_GROUPCALEDNAR = "SELECT group_calendar_id FROM User WHERE username=?";
 	public static final String GET_HOUSEHANDLE = "SELECT house_handle FROM User WHERE username=?";
 	public static final String UPDATE_STATUS = "UPDATE User SET status=? WHERE username=?";
+	public static final String GET_GROUPCALENDAR = "SELECT group_calendar_id FROM User WHERE house_handle=?";
 }

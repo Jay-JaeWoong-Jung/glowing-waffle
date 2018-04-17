@@ -463,6 +463,27 @@ public class UserDAO {
 		return listOfUsers;
 	}
 
+	public ArrayList<String> getGroupCalendars(String houseHandle){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		ArrayList<String> allGroupCalendar = new ArrayList<>();
+		try {
+			conn = getConnection();
+			String sql = Sql.GET_GROUPCALENDAR;
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, houseHandle);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				allGroupCalendar.add(rs.getString(1));
+			}
+			closeAll(rs, pstmt, conn);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return allGroupCalendar;
+	}
+
 	public void updateStatus(String username, String status){
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -488,24 +509,11 @@ public class UserDAO {
 	//Test here DAO methods here
 	public static void main(String args[] ) {
 		UserDAO dao = UserDAO.getInstanceOf();
-		dao.addClassCalendar("aaa","ttt");
-		dao.addGroupCalendar("aaa","???");
-		dao.addSocialCalendar("aaa", "whatthefuck?");
-
-		String classCalendar = null;
-		String socialCalendar = null;
-		String groupCalendar = null;
-		try {
-			classCalendar = dao.getClassCalendar("aaa");
-			socialCalendar = dao.getSocialCalendar("aaa");
-			groupCalendar = dao.getGroupCalendar("aaa");
-
-		} catch (SQLException e) {
-			e.printStackTrace();
+		ArrayList<String> groupCalendarId = dao.getGroupCalendars("main");
+		System.out.println("The size of group calendar id is now " + groupCalendarId.size());
+		for(String calendarId: groupCalendarId){
+			System.out.println("The current user's calendar id is " + calendarId);
 		}
-		System.out.println("I get the class calendar Id as " + classCalendar);
-		System.out.println("I get the social calendar Id as " + socialCalendar);
-		System.out.println("I get the group calendar Id as " + groupCalendar);
 
 	}
 }

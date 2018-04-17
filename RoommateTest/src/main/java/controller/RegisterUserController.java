@@ -15,7 +15,6 @@ public class RegisterUserController implements Controller {
 		String password = request.getParameter("password");
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
-		//System.out.println(request.getParameter("cellNum"));
 		long cellNumber = Long.parseLong(request.getParameter("cellNum"));
 		long emergencyNumber = Long.parseLong(request.getParameter("emergencyNum"));
 		String email = request.getParameter("email");
