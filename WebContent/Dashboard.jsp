@@ -1,7 +1,4 @@
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.util.Map" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="servlet.Client" %>
 <%@ page import="model.House" %>
 <%@ page import="model.User" %>
 <%@ page import="model.UserDAO" %>
@@ -9,21 +6,21 @@
 <html>
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <title>Chat servlet.Client</title>
     <script>
         var socket;
         var calendarId;
-
         function connectToServer() {
             socket = new WebSocket('ws://127.0.0.1:4444');
             socket.onopen = function(event) {
                 document.getElementById("myevent").innerHTML += "Connected!";
             }
             socket.onmessage = function(event) {
-                var div = document.getElementById("calendarforlogin");
-                div.style.display = 'none';
                 console.log("Received a message");
                 console.log("Current calendar id is " + calendarId);
+                var div = document.getElementById("calendarforlogin");
+                div.style.display = 'none';
                 if(calendarId == null) {
                     calendarId = event.data;
                 }
@@ -36,29 +33,21 @@
                 }
                 var constantbefore = "<iframe src=\"https://calendar.google.com/calendar/embed?src=";
                 var constantafter = "&ctz=America%2FLos_Angeles\" style=\"border: 0\" width=\"800\" height=\"600\" frameborder=\"0\" scrolling=\"no\"><\/iframe>";
-
                 console.log(calendarId);
                 document.getElementById("showCalendar").innerHTML = constantbefore + calendarId + constantafter;
             }
-
             socket.onclose = function(event) {
                 document.getElementById("myevent").innerHTML += "Disconnected!";
             }
         }
         function sendMessage(formname) {
             if(formname === "eventform"){
-                console.log("eventform");
                 var startingTime = document.getElementById("startingTime").value;
                 var endingTime = document.getElementById("endingTime").value;
                 var checkExist = document.getElementById("groupCalendarIdCheck").value;
-                console.log(checkExist);
                 if( checkExist != null){
-                    console.log("The group calendar hasn't saved in javascript");
                     calendarId = checkExist;
                 }
-
-                console.log(startingTime);
-                console.log(endingTime);
                 // get the calendarId
                 var radios = document.getElementsByName("calendarClass");
                 var radiobutton;
@@ -70,11 +59,11 @@
                         break;
                     }
                 }
-
+                // get houseid
+                var groupId = document.getElementById("houseId").value;
                 socket.send("eventform," + checkExist + "," + document.eventform.message.value + "," + startingTime +
-                "," + endingTime + "," + radiobutton);
+                "," + endingTime + "," + radiobutton + "," + groupId);
             }
-
             else if(formname === "toggle")
             {
                 console.log("toggle");
@@ -95,9 +84,10 @@
                 if( calendarExist != null){
                     calendarId = calendarExist;
                 }
-                socket.send("status," + userName + "," + statusbutton);
+                // get houseid
+                var groupId = document.getElementById("houseId").value;
+                socket.send("status," + userName + "," + statusbutton + "," + groupId);
             }
-
             else if(formname === "class" || formname === "social"){
                 console.log("calendar");
                 var calendar = document.getElementsByName("calendarId");
@@ -113,7 +103,6 @@
                         break;
                     }
                 }
-
                 socket.send("calendar ," + formname + "," + calendarButton + "," + groupId + "," + userName);
             }
             else{
@@ -136,7 +125,6 @@
         if(houseHandle != null) {
             houseId = houseHandle.getHouseHandle();
         }
-
         ArrayList<User> allCurrentUsers = UserDAO.getInstanceOf().getUsers(houseId);
         String groupCalendarId = (String) session.getAttribute("groupcalendarId");
         session.invalidate();
@@ -145,41 +133,23 @@
 </head>
 <body onload="connectToServer()">
 
-<div class = "choose">
-    Choose your class calendar:
-    <form name = "classForm" onsubmit = "return sendMessage('class')">
-        <% for(int i = 0; i<theListOfMap.size(); i++){
-            %>
-        <input type = "radio" name = "calendarId" value = <%=theListOfMap.get(i)%>>
-        <%=theListOfMap.get(i)%>
-        <br/>
-        <%
-        }%>
-        <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
-        <input type = "hidden" id = "houseId" name = "houseId" value = <%=houseId%>/>
-        <input type="submit" name="submit" value="choose calendar" />
-    </form>
+<div class="w3-container w3-grey" style="position:relative">
+ <a class="w3-btn w3-circle w3-xlarge w3-right w3-white" style="position:absolute;top:126px;right:42px;"><i>+</i></a>
+ <h1 class="w3-jumbo w3-text-grey" style="text-shadow:1px 1px 0 #444">DashBoard</h1>
 </div>
 
+<div class="w3-grey w3-animate-zoom" style="padding:20px 50px;background-image:url('pic_boat_portrait.jpg');
+background-size:cover;">
 
-<div class = "choose">
-    Choose your social calendar:
-    <form name = "socialForm" onsubmit = "return sendMessage('social')">
-        <% for(int i = 0; i<theListOfMap.size(); i++){
-        %>
-        <input type = "radio" name = "calendarId" value = <%=theListOfMap.get(i)%>>
-        <%=theListOfMap.get(i)%>
-        <br/>
-        <%
-            }%>
-        <%=houseId%>
-        <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
-        <input type = "hidden" id = "houseId" name = "houseId" value = <%=houseId%>/>
-        <input type="submit" name="submit" value="choose calendar" />
-    </form>
-</div>
+<div class="w3-section w3-row-padding">
 
-
+  <div class="w3-twothird">
+    <div class="w3-card-4">
+      <div class="w3-display-container">
+        <div class="w3-display-bottomleft w3-container w3-xlarge w3-text-black"><p>Calendar</p></div>
+      </div>
+      <div class="w3-container w3-light-grey">
+        
 <div class = "choose">
     <% if(null == groupCalendarId){
         %>
@@ -225,6 +195,7 @@
     <input type = "radio" name = "calendarClass" value = "Group Calendar">
     Group Calendar
     <br/>
+    <input type = "hidden" id = "houseId" name = "houseId" value = <%=houseId%>/>
     <input type = "hidden" id = "groupCalendarIdCheck" value = <%=groupCalendarId%>>
     <input type="submit" name="submit" value="Send Message" />
 </form>
@@ -255,11 +226,53 @@ You can change your status here:
     <br/>
     <input type = "radio" name = "radios" value = "donotdisturb"> Do not disturb
     <br/>
+    <input type = "hidden" id = "houseId" name = "houseId" value = <%=houseId%>/>
     <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
     <input type = "hidden" id = "existed" value = <%=groupCalendarId%>>
     <input type="submit" name="submit" value="Updated Status" />
 </form>
 
+        
+      </div>
+    </div>
+  </div>
+  <div class="w3-third w3-container w3-center">
+    <div class="w3-card-4">
+      <div class="w3-container">
+      <p class="w3-jumbo">Blah blah</p>
+      <p class="w3-large">Haha</p>
+      </div>
+      <div class="w3-container w3-white">
+      <p>Some Line</p>
+      </div>
+    </div>
+    <div class="w3-card-4 w3-section">
+      <div class="w3-container w3-white">
+      <p class="w3-xxlarge">Something here</p>
+      <p class="w3-large">Let me know if we want content here</p>
+      </div>
+      <div class="w3-container">
+      <p>3 Hours Ago</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="w3-section w3-container">
+<div class="w3-card-4">
+  <div class="w3-container w3-padding-16 w3-black w3-xxlarge">
+    <p>«<i> Making Life simpler </i>»</p>
+  </div>
+</div>
+</div>
+
+</div>
+
+<footer class="w3-container">
+  <p>Powered by 
+  <a href="Homepage.jsp">Roommates</a></p>
+</footer>
 
 </body>
 </html>
