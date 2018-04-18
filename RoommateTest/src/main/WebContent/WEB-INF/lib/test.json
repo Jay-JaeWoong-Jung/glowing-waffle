@@ -1,0 +1,115 @@
+{
+	"users": [{
+			"username": "ttrojan",
+			"password": "fighton",
+			"imageURL": "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg",
+			"followers": [
+				"jmiller",
+				"mtanaka"
+			],
+			"following": [
+				"jmiller"
+			],
+			"library": {
+				"read": [
+					"All Quiet on the Western Front",
+					"The Catcher in the Rye"
+				],
+				"favorite": [
+					"Cardinal and Gold: The Oral History of USC Trojans Football",
+					"Fight On!: The Colorful Story of Usc Football"
+				]
+			}
+		},
+		{
+			"username": "jmiller",
+			"password": "201prof",
+			"imageURL": "http://www-scf.usc.edu/~csci201/images/jeffrey_miller.jpg",
+			"followers": [
+				"ttrojan"
+			],
+			"following": [
+				"ttrojan",
+				"mtanaka",
+				"mchai"
+			],
+			"library": {
+				"read": [
+					"Lean Software Development: An Agile Toolkit: An Agile Toolkit",
+					"Driverless: Intelligent Cars and the Road Ahead"
+				],
+				"favorite": [
+					"All the Light We Cannot See: A Novel"
+				]
+			}
+		},
+		{
+			"username": "mtanaka",
+			"password": "hafaadai",
+			"imageURL": "http://www-scf.usc.edu/~csci201/images/matteo_tanaka.jpg",
+			"followers": [
+				"jmiller",
+				"mchai",
+				"smurmu"
+			],
+			"following": [
+				"ttrojan"
+			],
+			"library": {
+				"read": [
+					"The Number of the Beast",
+					"Dune",
+					"The Things They Carried"
+				],
+				"favorite": [
+					"Dune",
+					"Watership Down"
+				]
+			}
+		},
+		{
+			"username": "mchai",
+			"password": "shrekislove",
+			"imageURL": "http://www-scf.usc.edu/~csci201/images/melody_chai.jpg",
+			"followers": [
+				"jmiller",
+				"smurmu"
+			],
+			"following": [
+				"mtanaka"
+			],
+			"library": {
+				"read": [
+					"Farenheit 451",
+					"Brave New World",
+					"1984"
+				],
+				"favorite": [
+					"1984",
+					"A Clockwork Orange"
+				]
+			}
+		},
+		{
+			"username": "smurmu",
+			"password": "shrekislife",
+			"imageURL": "http://www-scf.usc.edu/~csci201/images/sondhayni_murmu.jpg",
+			"followers": [
+				"mtanaka"
+			],
+			"following": [
+				"mchai",
+				"mtanaka"
+			],
+			"library": {
+				"read": [
+					"American Gods",
+					"Milk and Honey"
+				],
+				"favorite": [
+					"The Elegance of the Hedgehog"
+				]
+			}
+		}
+	]
+}
