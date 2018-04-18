@@ -5,6 +5,32 @@
 <!DOCTYPE html>
 <html>
 <head>
+<style>
+input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=submit] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #45a049;
+}
+</style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <title>Chat servlet.Client</title>
@@ -158,7 +184,7 @@ background-size:cover;">
     <form name = "groupForm" onsubmit = "return sendMessage('group')">
         <input type = "hidden" id = "userId" name = "userId" value = <%=user.getUsername()%>/>
         <input type = "text" id = "summary" name = "calendarSummary" >
-        <input type="submit" name="submit" value="choose calendar" />
+        <button type="submit" name="submit" value="choose calendar" ></button>
     </form>
     <%
         }
@@ -210,13 +236,13 @@ background-size:cover;">
     <br/>
     <input type = "hidden" id = "houseId" name = "houseId" value = <%=houseId%>/>
     <input type = "hidden" id = "groupCalendarIdCheck" value = <%=groupCalendarId%>>
-    <input type="submit" name="submit" value="Send Message" />
+    <input type="submit" name="submit" value="choose calendar" >
 </form>
       
      
       </div>
       <div class="w3-container w3-Light-white">
-      <p>Some Line</p>
+     
       </div>
     </div>
     <div class="w3-card-4 w3-section">
@@ -250,10 +276,10 @@ You can change your status here:
     <input type = "hidden" id = "existed" value = <%=groupCalendarId%>>
     <input type="submit" name="submit" value="Updated Status" />
 </form>
-      <p class="w3-large">Let me know if we want content here</p>
+     
       </div>
       <div class="w3-container">
-      <p>3 Hours Ago</p>
+    
       </div>
     </div>
   </div>
