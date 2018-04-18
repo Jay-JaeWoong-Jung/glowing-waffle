@@ -15,25 +15,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegisterHouseController implements Controller,Runnable {
+public class RegisterHouseController implements Controller {
 	Boolean completed = false;
 	ArrayList<String> calendarList;
 	String userIdentifier = null;
-	public void run(){
-		try {
-			CalendarGet calendarGet = new CalendarGet();
-			calendarList = new ArrayList<String>();
-			HashMap<String,String> calendarId = calendarGet.getSummaryToId();
-			for(Map.Entry<String, String> entry: calendarId.entrySet()){
-				System.out.println(entry.getKey());
-				calendarList.add(entry.getKey());
-			}
-			Thread.sleep(2000);
-			Client client = new Client(userIdentifier, "localhost", 6789);
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+
 
 	@Override
 	public ModelAndView HandleRequest(HttpServletRequest request, HttpServletResponse response){
@@ -55,8 +41,7 @@ public class RegisterHouseController implements Controller,Runnable {
 					e.printStackTrace();
 				}
 			}
-			session.setAttribute("calendarList", calendarList);
-			session.setAttribute("house", house);
+			session.setAttribute("houseid", house.getHouseHandle());
 			url = "Dashboard.jsp";
 		}
 		

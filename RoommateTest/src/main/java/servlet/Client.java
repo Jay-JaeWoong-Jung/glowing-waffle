@@ -176,10 +176,8 @@ public class Client extends WebSocketServer{
             houseHandle = houseHandle.substring(0, houseHandle.length() - 1);
             groupCalendarIdOfCurrentUser = parts[1];
             System.out.println("Current group id is " + houseHandle);
-            if(calendar.equals("Group Calendar")){
-                // get the group calendar of the current socket
-                //groupCalendarIdOfCurrentUser = parts[1];
 
+            if(calendar.equals("Group Calendar")){
                 // check whether the group id exist; if not then add the group calendar controller;
                 Set<String> value = groupCalendarController.get(houseHandle);
                 if(value!=null){
@@ -250,10 +248,22 @@ public class Client extends WebSocketServer{
                     userNameOfCurrentUser = userNameOfCurrentUser.replace(userNameOfCurrentUser.substring(userNameOfCurrentUser.length()-1), "");
                     System.out.println("The user name is now " + userNameOfCurrentUser);
                     UserDAO.getInstanceOf().addGroupCalendar(userNameOfCurrentUser,groupCalendarIdOfCurrentUser);
+                    String houseId = parts[4];
+                    System.out.println("The house hold is now " + houseId);
+                    System.out.println("The group calendar is now " + groupCalendarIdOfCurrentUser);
+                    Set<WebSocket> value = webSocketController.get(houseId);
+                    if(value!=null){
+                        System.out.println("");
+                        if(!value.contains(conn)){
+                            value.add(conn);
+                        }
+                    } else{
+                        System.out.println("The current house id doesn't exists");
+                        Set<WebSocket> webSocketCollection = new HashSet<>();
+                        webSocketCollection.add(conn);
+                        webSocketController.put(houseId,webSocketCollection);
+                    }
                     conn.send(groupCalendarIdOfCurrentUser);
-                    ArrayList<String> eventDetail = new ArrayList<>();
-                    eventDetail.add("first");
-
                     return;
                 } catch (Exception e) {
                     e.printStackTrace();
