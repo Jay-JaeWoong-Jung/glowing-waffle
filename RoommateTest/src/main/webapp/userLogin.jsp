@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -11,11 +12,29 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
+    <script>
+        $(document).ready(function () {
+            $("form-request-help").validate({
+                rules: {
+                    username: {
+                        required: true
+                    },
+                    password: {
+                        required: true
+                    }
+                },
+                messages: {
+                    username: {
+                        required: "specify email"
+                    },
+                    password: {
+                        required: "specify password"
+                    }
+                },
+                submitHandler: function (form) { // for demo
+    </script>
     <!-- Custom styles for this template -->
     <link href="signup.css" rel="stylesheet">
-
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,16 +76,18 @@
     <div class="hero-body">
         <div class="container has-text-centered">
 
-            <div class="column is-5 is-offset-3">
-                <figure class="image is-4by3">
-                    <img src="https://picsum.photos/800/600/?random" alt="Description">
-                </figure>
-            </div>
-            <div class="column is-5 is-offset-3">
 
-                <form class="form-request-help" method="POST" action="DispatcherServlet">
-                    <h2 class="form-request-help-heading text-center">Roommates</h2>
 
+            <form class="form-request-help" method="POST" action="DispatcherServlet">
+
+
+                <div class="column is-5 is-offset-3">
+                    <h6 class="form-request-help-heading text-center"><font size="20">Roommates</font></h6>
+                    <figure class="image is-4by3">
+                        <img src="https://picsum.photos/800/600/?random" alt="Description">
+                    </figure>
+                </div>
+                <div class="column is-5 is-offset-3">
                     <label for="username" class="sr-only">type your full name </label>
                     <input type="text" name="username" class="form-control" placeholder="Enter a username" required autofocus>
 
@@ -76,10 +97,10 @@
 
 
                     <button class="btn btn-lg btn-primary btn-block" type="submit">submit</button>
-                </form>
+            </form>
 
-            </div>
         </div>
+    </div>
     </div>
     </div>
 

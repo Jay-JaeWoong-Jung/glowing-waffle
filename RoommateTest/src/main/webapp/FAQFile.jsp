@@ -58,7 +58,7 @@
         <div class="container has-text-centered">
 
             <div class="column is-5 is-offset-3">
-            <h1>FAQ</h1>
+                <h1>FAQ</h1>
                 <figure class="image is-4by3">
                     <img src="https://picsum.photos/800/600/?random" alt="Description">
                 </figure>
@@ -66,10 +66,10 @@
             <div class="column is-5 is-offset-3">
 
                 <ul>
-  				<li>What kind of products do you offer? - We help you live your life, through our service, you can coordinate together</li>
-  				<li>Cost? - Our service is absolutely free!</li>
-  				<li>Great where do I start? - Just go ahead and create a free account with us and start your Roommate Life</li>
-				</ul>  
+                    <li>What kind of products do you offer? - We help you live your life, through our service, you can coordinate together</li>
+                    <li>Cost? - Our service is absolutely free!</li>
+                    <li>Great where do I start? - Just go ahead and create a free account with us and start your Roommate Life</li>
+                </ul>
 
             </div>
         </div>

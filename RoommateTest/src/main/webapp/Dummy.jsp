@@ -10,8 +10,9 @@
 <head>
     <title>GuestUser</title>
     Which House Are You Interested In?
-    <form>
-        <input type = "text">
+    <form method="POST" action="DispatcherServlet">
+        <input type = "text" name = "houseHandle">
+        <input type="hidden" name="command" value="guestUser">
     </form>
 </head>
 <body>

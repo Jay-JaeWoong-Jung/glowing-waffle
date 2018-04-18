@@ -21,6 +21,8 @@ public class HandlerMapping {
 			controller = new RegisterHouseController();
 		} else if (command.equals("joinHouseHandle")) {
 			controller = new JoinHouserController();
+		} else if (command.equals("guestUser")){
+			controller = new GuestUserController();
 		}
 		
 		System.out.println("inside handler "+controller+"controller created");
