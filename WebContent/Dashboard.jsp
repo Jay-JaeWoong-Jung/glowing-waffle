@@ -133,12 +133,12 @@
 </head>
 <body onload="connectToServer()">
 
-<div class="w3-container w3-grey" style="position:relative">
+<div class="w3-container w3-Light-blue" style="position:relative">
  <a class="w3-btn w3-circle w3-xlarge w3-right w3-white" style="position:absolute;top:126px;right:42px;"><i>+</i></a>
- <h1 class="w3-jumbo w3-text-grey" style="text-shadow:1px 1px 0 #444">DashBoard</h1>
+ <h1 class="w3-jumbo w3-text-blue" style="text-shadow:1px 1px 0 #444">DashBoard</h1>
 </div>
 
-<div class="w3-grey w3-animate-zoom" style="padding:20px 50px;background-image:url('pic_boat_portrait.jpg');
+<div class="w3-pale-blue w3-animate-zoom" style="padding:20px 50px;background-image:url('pic_boat_portrait.jpg');
 background-size:cover;">
 
 <div class="w3-section w3-row-padding">
@@ -146,9 +146,9 @@ background-size:cover;">
   <div class="w3-twothird">
     <div class="w3-card-4">
       <div class="w3-display-container">
-        <div class="w3-display-bottomleft w3-container w3-xlarge w3-text-black"><p>Calendar</p></div>
+        <div class="w3-display-bottomleft w3-container w3-xlarge w3-text-black"><p></p></div>
       </div>
-      <div class="w3-container w3-light-grey">
+      <div class="w3-container w3-white">
         
 <div class = "choose">
     <% if(null == groupCalendarId){
@@ -181,11 +181,24 @@ background-size:cover;">
 
 </div>
 
-<h3> Add a new event </h3>
-<form name="eventform" onsubmit="return sendMessage('eventform');">
+
+
+
+
+        
+      </div>
+    </div>
+  </div>
+  <div class="w3-third w3-container w3-center">
+    <div class="w3-card-4">
+      <div class="w3-container w3-white">
+      
+      <h3> Add a new event </h3>
+	<form name="eventform" onsubmit="return sendMessage('eventform');">
     Summary: <input type="text" name="message" value = "Title"/><br />
     Starting Time:  <input id="startingTime" type="datetime-local" name="partydate" value="2017-06-01T08:30">
     Ending Time: <input id="endingTime" type="datetime-local" name="partydate" value="2017-06-01T08:30">
+    <br />
     <input type = "radio" name = "calendarClass" value = "Class Calendar">
     Class Calendar
     <br/>
@@ -199,9 +212,16 @@ background-size:cover;">
     <input type = "hidden" id = "groupCalendarIdCheck" value = <%=groupCalendarId%>>
     <input type="submit" name="submit" value="Send Message" />
 </form>
-
-<br />
-
+      
+     
+      </div>
+      <div class="w3-container w3-Light-white">
+      <p>Some Line</p>
+      </div>
+    </div>
+    <div class="w3-card-4 w3-section">
+      <div class="w3-container w3-white">
+      
 <div id="myevent">
 You are currently in the household: <%=houseId%> <br/>
 Now their status is <br/>
@@ -215,7 +235,6 @@ Now their status is <br/>
     }
 %>
 </div>
-
 You can change your status here:
 <form name = "toggle" onsubmit = "return sendMessage('toggle');">
     <input type = "radio" name = "radios" value = "inroom">
@@ -231,24 +250,6 @@ You can change your status here:
     <input type = "hidden" id = "existed" value = <%=groupCalendarId%>>
     <input type="submit" name="submit" value="Updated Status" />
 </form>
-
-        
-      </div>
-    </div>
-  </div>
-  <div class="w3-third w3-container w3-center">
-    <div class="w3-card-4">
-      <div class="w3-container">
-      <p class="w3-jumbo">Blah blah</p>
-      <p class="w3-large">Haha</p>
-      </div>
-      <div class="w3-container w3-white">
-      <p>Some Line</p>
-      </div>
-    </div>
-    <div class="w3-card-4 w3-section">
-      <div class="w3-container w3-white">
-      <p class="w3-xxlarge">Something here</p>
       <p class="w3-large">Let me know if we want content here</p>
       </div>
       <div class="w3-container">
@@ -262,7 +263,7 @@ You can change your status here:
 <div class="w3-section w3-container">
 <div class="w3-card-4">
   <div class="w3-container w3-padding-16 w3-black w3-xxlarge">
-    <p>«<i> Making Life simpler </i>»</p>
+    <p> Making Life simpler </p>
   </div>
 </div>
 </div>
