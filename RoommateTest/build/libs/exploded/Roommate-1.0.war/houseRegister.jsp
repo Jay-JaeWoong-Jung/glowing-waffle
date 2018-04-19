@@ -24,8 +24,10 @@
 
  <div class="container">
 
+
       <form class="form-request-help" method="POST" action="DispatcherServlet">
         <h2 class="form-request-help-heading text-center">Roommate</h2>
+          <h4 class="form-request-help-heading text-left">Create a house handle:</h4>
         <label for="houseHandle" class="sr-only">What is your housing group called </label>
         <input type="text" name="houseHandle" class="form-control" placeholder="Ex. 37mainStreet" required autofocus>
         <input type="hidden" name="command" value="creaetHouseHandle" >
@@ -35,7 +37,7 @@
 	 
 	 
 	  <form class="form-request-help" method="POST" action="DispatcherServlet">
-	        
+          <h4 class="form-request-help-heading text-left">Join a house handle:</h4>
         <label for="houseHandle" class="sr-only">Your housing URL </label>
         <input type="text" name="houseHandle" class="form-control" placeholder="123mainStreet" required autofocus>
 		<input type="hidden" name= "command" value="joinHouseHandle">

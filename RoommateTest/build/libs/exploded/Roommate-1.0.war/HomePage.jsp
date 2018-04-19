@@ -65,6 +65,9 @@
                         <a class="button is-medium is-info is-outlined" href="Dummy.jsp">
                             Guest
                         </a>
+                        <a class="button is-medium is-info is-outlined" href="FAQFile.jsp">
+                            FAQ
+                        </a>
                     </p>
                 </div>
             </div>

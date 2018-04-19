@@ -17,11 +17,6 @@ public class Command implements Serializable {
         this.obj = obj;
     }
 
-    public Command(CommandType type, Object obj, Object obj2){
-        this.commandType = type;
-        this.obj = obj;
-        this.obj2 = obj2;
-    }
 
     public CommandType getCommandType() {
         return commandType;
